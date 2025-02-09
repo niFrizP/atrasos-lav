@@ -1,0 +1,65 @@
+# -----------------------------
+# Laravel & PHP
+# -----------------------------
+
+# Dependencias de Composer
+/vendor/
+
+# Archivos de entorno
+.env
+.env.*.php
+
+# Archivos de configuración local (Homestead u otros)
+/Homestead.json
+/Homestead.yaml
+
+# Archivos de logs y caché de PHPUnit
+.phpunit.result.cache
+
+# -----------------------------
+# Node.js / Vite
+# -----------------------------
+
+# Dependencias de Node (npm, yarn, etc.)
+/node_modules/
+
+# Archivos generados por Vite
+/public/build/
+/public/hot
+
+# -----------------------------
+# Archivos y directorios generados por Laravel
+# -----------------------------
+
+# Storage público (links simbólicos, etc.)
+/public/storage
+
+# Claves de seguridad y otros archivos en storage
+/storage/*.key
+
+# (Opcional) Puedes ignorar otros directorios de storage que se generan en tiempo de ejecución:
+# /storage/app/public
+# /storage/framework/cache
+# /storage/framework/sessions
+# /storage/framework/views
+# /storage/logs
+
+# -----------------------------
+# Otros archivos y directorios comunes
+# -----------------------------
+
+# Archivos de logs y errores de Node
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Archivos y configuraciones de editores/IDEs
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
