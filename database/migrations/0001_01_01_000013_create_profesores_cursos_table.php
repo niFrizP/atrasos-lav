@@ -13,8 +13,11 @@ return new class extends Migration
     {
         Schema::create('profesores_cursos', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('profesor_id')->index('fk_profesores_cursos_profesor');
-            $table->unsignedBigInteger('curso_id')->index('fk_profesores_cursos_curso');
+            $table->foreignId('usuario_id')->constrained('usuarios')->onDelete('cascade');
+            $table->foreignId('curso_id')->constrained('cursos')->onDelete('cascade');
+            $table->year('anio'); // Año en el que se asignó
+            $table->boolean('activo')->default(true); // Para saber cuál es la asignación actual
+            $table->timestamps();
         });
     }
 

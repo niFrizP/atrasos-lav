@@ -1,5 +1,5 @@
 # Configuración
-$MigrationPath = "lav_db/migrations/"
+$MigrationPath = ".\database\migrations\"
 $DatabaseName = "lav_db"   # 🔹 Reemplázalo con el nombre real de tu BD
 $MySQLPath = "D:\xampp\mysql\bin\mysql.exe" # 🔹 Ruta del ejecutable de MySQL en XAMPP
 $User = "root"  # 🔹 Usuario de MySQL

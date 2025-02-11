@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Auth;
 
 class ProfileController extends Controller
 {
@@ -44,4 +45,11 @@ class ProfileController extends Controller
 
         return redirect('/');
     }
+
+    public function dashboard()
+    {
+        $usuario = Auth::user();
+        return view('dashboard', compact('usuario'));
+    }
+    
 }

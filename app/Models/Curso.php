@@ -2,6 +2,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Grado;
+use App\Models\Estudiante;
+use App\Models\Atraso;
 
 class Curso extends Model
 {
@@ -15,22 +18,23 @@ class Curso extends Model
     }
 
     // Un curso tiene muchos estudiantes.
-    public function profesorJefe()
-    {
-        return $this->belongsTo(Usuario::class, 'profesor_jefe_id');
-    }
-
-    // Un curso tiene muchos estudiantes.
     public function estudiantes()
     {
         return $this->hasMany(Estudiante::class, 'curso_id');
     }
 
     // Un curso tiene muchos profesores.
-    public function profesores()
+    public function cursos()
     {
-        return $this->belongsToMany(Usuario::class, 'profesores_cursos', 'curso_id', 'profesor_id');
+        return $this->hasMany(ProfesoresCurso::class, 'usuario_id');
     }
+    
+    // Un curso tiene un profesor jefe.
+    public function cursoActual()
+    {
+        return $this->hasOne(ProfesoresCurso::class, 'usuario_id')->where('activo', true);
+    }
+    
     
     // Un curso tiene muchos atrasos.
     public function atrasos()
