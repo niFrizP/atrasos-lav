@@ -41,7 +41,7 @@
                         <!-- Teléfono -->
                         <div class="mb-4">
                             <x-input-label for="telefono" :value="__('Teléfono')" />
-                            <x-text-input id="telefono" class="block mt-1 w-full" type="text" name="telefono"
+                            <x-text-input id="telefono" class="block mt-1 w-full" type="tel" name="telefono"
                                 required placeholder="Ej: 9 99999999" />
                             <x-input-error :messages="$errors->get('telefono')" class="mt-2" />
                         </div>

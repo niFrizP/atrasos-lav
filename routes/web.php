@@ -17,15 +17,6 @@ Route::get('/dashboard', function () {
     return view('dashboard', compact('usuario'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-// Cursos
-Route::get('/cursos', [CursoController::class, 'index'])->name('cursos.index');
-Route::get('/cursos/{id}', [CursoController::class, 'show'])->name('cursos.show');
-
-// Profesores
-Route::get('/profesores', [ProfesorController::class, 'index'])->name('profesores.index');
-Route::get('/profesores/{id}', [ProfesorController::class, 'show'])->name('profesores.show');
-Route::post('/profesores/asignar', [ProfesorController::class, 'asignar'])->name('profesores.asignar');
-
 
 // Rutas protegidas por autenticación
 Route::middleware('auth')->group(function () {
@@ -36,5 +27,13 @@ Route::middleware('auth')->group(function () {
     Route::resource('/cursos', CursoController::class);
 });
 
-// Rutas de autenticación
+// Cursos
+Route::get('/cursos', [CursoController::class, 'index'])->name('cursos.index');
+Route::get('/cursos/{id}', [CursoController::class, 'show'])->name('cursos.show');
+
+// Profesores
+Route::get('/profesores', [ProfesorController::class, 'index'])->name('profesores.index');
+Route::get('/profesores/{id}', [ProfesorController::class, 'show'])->name('profesores.show');
+Route::post('/profesores/asignar', [ProfesorController::class, 'asignar'])->name('profesores.asignar');
+
 require __DIR__ . '/auth.php';
