@@ -12,18 +12,11 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['IBM Plex Sans', ...defaultTheme.fontFamily.sans],
+                sans: ['figtree', ...defaultTheme.fontFamily.sans],
             },
         },
     },
-
+    darkMode: 'class', // Esto asegura que el modo oscuro se active usando una clase
     plugins: [forms],
 };
-module.exports = {
-    darkMode: 'class',
-    theme: {
-        extend: {},
-    },
-    plugins: [],
-}
 

@@ -1,25 +1,30 @@
-@extends('layouts.app')
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+            {{ __('Grados y Cursos') }}
+        </h2>
+    </x-slot>
 
-@section('content')
-<div class="container">
-    <h1 class="text-2xl font-bold mb-4">Cursos</h1>
-    
-    @foreach ($grados as $grado)
-        <div class="mb-6">
-            <h2 class="text-xl font-semibold">{{ $grado->nombre }}</h2>
-            <ul class="list-disc pl-6">
-                @foreach ($grado->cursos as $curso)
-                    <li class="flex justify-between">
-                        <a href="{{ route('cursos.show', $curso->id) }}" class="text-blue-500 hover:underline">
-                            Curso {{ $curso->codigo }}
-                        </a>
-                        <span class="text-gray-700">
-                            Prof. Jefe: {{ optional($curso->profesorActual->usuario)->nomape ?? 'No asignado' }}
-                        </span>
-                    </li>
-                @endforeach
-            </ul>
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900 dark:text-gray-100">
+                    <h1 class="text-2xl font-bold mb-4">{{ __('Grados Disponibles') }}</h1>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        @foreach ($grados as $grado)
+                            <a href="{{ route('cursos.show', $grado->id) }}"
+                                class="p-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg block text-center">
+                                {{ $grado->nombre }}
+                            </a>
+                        @endforeach
+                    </div>
+
+                    @if ($grados->isEmpty())
+                        <p class="text-red-500 mt-4">No hay grados registrados.</p>
+                    @endif
+                </div>
+            </div>
         </div>
-    @endforeach
-</div>
-@endsection
+    </div>
+</x-app-layout>

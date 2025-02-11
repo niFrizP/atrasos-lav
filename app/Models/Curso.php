@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -28,18 +29,24 @@ class Curso extends Model
     {
         return $this->hasMany(ProfesoresCurso::class, 'usuario_id');
     }
-    
+
+    // En tu modelo Estudiante
+    public function curso()
+    {
+        return $this->belongsTo(Curso::class);
+    }
+
+
     // Un curso tiene un profesor jefe.
     public function cursoActual()
     {
         return $this->hasOne(ProfesoresCurso::class, 'usuario_id')->where('activo', true);
     }
-    
-    
+
+
     // Un curso tiene muchos atrasos.
     public function atrasos()
     {
         return $this->hasManyThrough(Atraso::class, Estudiante::class, 'curso_id', 'estudiante_id');
     }
-    
 }

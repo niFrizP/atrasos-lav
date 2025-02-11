@@ -1,18 +1,30 @@
-@extends('layouts.app')
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+            {{ __('Cursos de ') . $grado->nombre }}
+        </h2>
+    </x-slot>
 
-@section('content')
-<div class="container">
-    <h1 class="text-2xl font-bold mb-4">Curso {{ $curso->codigo }}</h1>
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900 dark:text-gray-100">
+                    <h1 class="text-2xl font-bold mb-4">{{ __('Cursos en ') . $grado->nombre }}</h1>
 
-    <p><strong>Profesor Jefe:</strong> {{ optional($curso->profesorActual->usuario)->nomape ?? 'No asignado' }}</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        @foreach ($grado->cursos as $curso)
+                            <a href="{{ route('cursos.curso', $curso->id) }}"
+                                class="p-4 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg block text-center">
+                                {{ $curso->codigo }}
+                            </a>
+                        @endforeach
+                    </div>
 
-    <h2 class="text-xl font-semibold mt-4">Estudiantes</h2>
-    <ul class="list-disc pl-6">
-        @foreach ($curso->estudiantes as $estudiante)
-            <li>
-                {{ $estudiante->nomape }} (RUT: {{ $estudiante->rut }})
-            </li>
-        @endforeach
-    </ul>
-</div>
-@endsection
+                    @if ($grado->cursos->isEmpty())
+                        <p class="text-red-500 mt-4">No hay cursos registrados en este grado.</p>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+</x-app-layout>

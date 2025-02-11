@@ -15,14 +15,38 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Inicio') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('atrasos.index')" :active="request()->routeIs('atrasos.index')">
+                        {{ __('Atrasos') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('cursos.index')" :active="request()->routeIs('cursos.index')">
+                        {{ __('Cursos') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('estudiantes.index')" :active="request()->routeIs('estudiantes.index')">
+                        {{ __('Estudiantes') }}
+                    </x-nav-link>
                     <x-nav-link :href="route('profesores.index')" :active="request()->routeIs('profesores.index')">
                         {{ __('Profesores') }}
                     </x-nav-link>
+                    <script>
+                        // Script que carga el tema seleccionado por el usuario o el esquema preferido del sistema
+                        if (localStorage.getItem('theme') === 'dark' ||
+                            (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                            document.documentElement.classList.add('dark');
+                        } else {
+                            document.documentElement.classList.remove('dark');
+                        }
+                    </script>
                 </div>
             </div>
 
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
+                <button id="theme-toggle" class="p-2 rounded-full focus:outline-none">
+                    <!-- Dark Icon (moon) -->
+                    <i class="fa-solid fa-moon" style="color: #f3f4f6;" id="theme-toggle-dark-icon"></i>
+                    <!-- Light Icon (sun) -->
+                    <i class="fa-solid fa-sun" id="theme-toggle-light-icon"></i>
+                </button>
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button
@@ -109,3 +133,33 @@
         </div>
     </div>
 </nav>
+<script>
+    const themeToggleButton = document.getElementById('theme-toggle');
+    const darkIcon = document.getElementById('theme-toggle-dark-icon');
+    const lightIcon = document.getElementById('theme-toggle-light-icon');
+
+    // Inicializa el tema basado en localStorage o elige claro por defecto
+    if (localStorage.getItem('theme') === 'dark') {
+        document.documentElement.classList.add('dark');
+        darkIcon.classList.remove('hidden');
+        lightIcon.classList.add('hidden');
+    } else {
+        lightIcon.classList.remove('hidden');
+        darkIcon.classList.add('hidden');
+    }
+
+    themeToggleButton.addEventListener('click', function() {
+        // Alterna la clase de modo oscuro en el elemento html
+        document.documentElement.classList.toggle('dark');
+        if (document.documentElement.classList.contains('dark')) {
+            darkIcon.classList.remove('hidden');
+            lightIcon.classList.add('hidden');
+            localStorage.setItem('theme', 'dark');
+        } else {
+            lightIcon.classList.remove('hidden');
+            darkIcon.classList.add('hidden');
+            localStorage.setItem('theme', 'light');
+        }
+    });
+</script>
+<script src="https://kit.fontawesome.com/6fb68a0884.js" crossorigin="anonymous"></script>

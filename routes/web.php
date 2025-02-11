@@ -5,6 +5,11 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CursoController;
 use App\Http\Controllers\ProfesorController;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\AtrasoController;
+use App\Http\Controllers\EstudianteController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\BusquedaController;
+
 
 // Redicción a inicio
 Route::get('/', function () {
@@ -17,6 +22,7 @@ Route::get('/dashboard', function () {
     return view('dashboard', compact('usuario'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth'])->name('dashboard');
 
 // Rutas protegidas por autenticación
 Route::middleware('auth')->group(function () {
@@ -24,16 +30,37 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::resource('/profesores', ProfesorController::class)->middleware('auth');
-    Route::resource('/cursos', CursoController::class);
 });
 
-// Cursos
-Route::get('/cursos', [CursoController::class, 'index'])->name('cursos.index');
-Route::get('/cursos/{id}', [CursoController::class, 'show'])->name('cursos.show');
 
+// Rutas de curso protegidas por autenticación
+Route::middleware(['auth'])->group(function () {
+    Route::get('/cursos', [CursoController::class, 'index'])->name('cursos.index');
+    Route::get('/cursos/{grado}', [CursoController::class, 'show'])->name('cursos.show');
+    Route::get('/curso/{curso}', [CursoController::class, 'showCurso'])->name('cursos.curso');
+});
 // Profesores
 Route::get('/profesores', [ProfesorController::class, 'index'])->name('profesores.index');
+Route::get('/profesores/create', [ProfesorController::class, 'create'])->name('profesores.create');
+Route::get('/profesores/{id}/edit', [ProfesorController::class, 'edit'])->name('profesores.edit');
+Route::put('/profesores/{id}', [ProfesorController::class, 'update'])->name('profesores.update');
+Route::delete('/profesores/{id}', [ProfesorController::class, 'destroy'])->name('profesores.destroy');
 Route::get('/profesores/{id}', [ProfesorController::class, 'show'])->name('profesores.show');
 Route::post('/profesores/asignar', [ProfesorController::class, 'asignar'])->name('profesores.asignar');
 
+// Atrasos
+Route::resource('/atrasos', AtrasoController::class)->middleware('auth');
+
+// Estudiantes
+Route::get('estudiantes', [EstudianteController::class, 'index'])->name('estudiantes.index'); // Listado de estudiantes
+Route::get('estudiantes/create', [EstudianteController::class, 'create'])->name('estudiantes.create'); // Formulario de creación
+Route::post('estudiantes', [EstudianteController::class, 'store'])->name('estudiantes.store'); // Guardar estudiante
+Route::get('estudiantes/{estudiante}', [EstudianteController::class, 'show'])->name('estudiantes.show'); // Mostrar detalle de un estudiante
+Route::get('estudiantes/{estudiante}/edit', [EstudianteController::class, 'edit'])->name('estudiantes.edit'); // Formulario de edición
+Route::put('estudiantes/{estudiante}', [EstudianteController::class, 'update'])->name('estudiantes.update'); // Actualizar estudiante
+Route::patch('estudiantes/{estudiante}/disable', [EstudianteController::class, 'disable'])->name('estudiantes.disable'); // Deshabilitar estudiante
+
+// Busquedas
+Route::get('/buscar-estudiante', [BusquedaController::class, 'buscarEstudiante'])->name('buscar.estudiante');
+Route::get('/buscar-atraso', [BusquedaController::class, 'buscarAtraso'])->name('buscar.atraso');
 require __DIR__ . '/auth.php';

@@ -15,9 +15,16 @@ class ProfesorController extends Controller
      */
     public function index()
     {
-        $profesores = Usuario::where('rol_id', 2)->with('cursos.curso')->get(); // 2 = Profesor
+        // Obtener profesores con rol_id 3 (Profesor) y que están activos
+        $profesores = Usuario::where('rol_id', 3)
+            ->where('activo', 1)
+            ->with('cursos.grado')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
         return view('profesores.index', compact('profesores'));
     }
+
 
     /**
      * Muestra los cursos donde ha sido profesor jefe.
@@ -52,15 +59,21 @@ class ProfesorController extends Controller
         return redirect()->route('cursos.index')->with('success', 'Profesor jefe actualizado correctamente.');
     }
 
-    public function create()
-    {
-        return view('profesores.create');
-    }
-
     /**
      * Muestra el formulario para crear un nuevo profesor.
      */
+    public function create()
+    {
+        // Obtener los cursos que no tienen profesor jefe asignado aún
+        $cursos = Curso::whereNull('profesor_jefe_id')->get();
 
+        // Pasamos los cursos a la vista
+        return view('profesores.create', compact('cursos'));
+    }
+
+    /**
+     * Guarda un nuevo profesor y opcionalmente lo asigna como jefe de curso.
+     */
     public function store(Request $request)
     {
         // Validación de datos
@@ -70,10 +83,11 @@ class ProfesorController extends Controller
             'correo' => 'required|email|max:255|unique:usuarios,correo',
             'telefono' => 'nullable|string|max:9',
             'password' => 'required|string|min:8',
+            'curso_id' => 'nullable|exists:cursos,id', // Validar el curso seleccionado
         ]);
 
         // Crear el usuario (Profesor)
-        Usuario::create([
+        $profesor = Usuario::create([
             'nomape' => $request->nomape,
             'rut' => $request->rut,
             'correo' => $request->correo,
@@ -82,7 +96,66 @@ class ProfesorController extends Controller
             'rol_id' => 3, // Profesor
         ]);
 
+        // Si se selecciona un curso, asignar al profesor como jefe de curso
+        if ($request->curso_id) {
+            $curso = Curso::find($request->curso_id);
+            $curso->profesor_jefe_id = $profesor->id;
+            $curso->save();
+        }
 
-        return redirect()->route('profesores.index')->with('success', 'Profesor creado exitosamente.');
+        return redirect()->route('profesores.index')->with('success', 'Profesor creado y curso asignado correctamente.');
+    }
+
+
+    // Muestra el formulario de edición de un profesor
+    public function edit($id)
+    {
+        $profesor = Usuario::findOrFail($id);
+        $cursos = Curso::whereNull('profesor_jefe_id')->orWhere('profesor_jefe_id', $profesor->id)->get(); // Cursos disponibles o asignados al profesor
+        return view('profesores.edit', compact('profesor', 'cursos'));
+    }
+
+    // Actualiza los datos de un profesor
+    public function update(Request $request, $id)
+    {
+        $profesor = Usuario::findOrFail($id);
+
+        // Validar los datos
+        $request->validate([
+            'nomape' => 'required|string|max:350',
+            'rut' => 'required|string|max:15|unique:usuarios,rut,' . $profesor->id,
+            'correo' => 'required|email|max:255|unique:usuarios,correo,' . $profesor->id,
+            'telefono' => 'nullable|string|max:9',
+            'curso_id' => 'nullable|exists:cursos,id',
+        ]);
+
+        // Actualizar los datos del profesor
+        $profesor->update([
+            'nomape' => $request->nomape,
+            'rut' => $request->rut,
+            'correo' => $request->correo,
+            'telefono' => $request->telefono,
+        ]);
+
+        // Asignar curso si se selecciona
+        if ($request->curso_id) {
+            $curso = Curso::find($request->curso_id);
+            $curso->profesor_jefe_id = $profesor->id;
+            $curso->save();
+        }
+
+        return redirect()->route('profesores.index')->with('success', 'Profesor actualizado correctamente.');
+    }
+
+    // Desactivar un profesor
+    public function destroy($id)
+    {
+        $profesor = Usuario::findOrFail($id);
+
+        // Desactivar el profesor sin eliminarlo
+        $profesor->activo = false;
+        $profesor->save();
+
+        return redirect()->route('profesores.index')->with('success', 'Profesor desactivado correctamente.');
     }
 }

@@ -18,6 +18,8 @@
                                     <th class="border border-gray-300 dark:border-gray-600 p-2">{{ __('Nombre') }}</th>
                                     <th class="border border-gray-300 dark:border-gray-600 p-2">
                                         {{ __('Curso Asignado') }}</th>
+                                    <th class="border border-gray-300 dark:border-gray-600 p-2 text-center">
+                                        {{ __('Acciones') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -31,14 +33,29 @@
                                                 <span class="text-gray-500">{{ __('Sin curso asignado') }}</span>
                                             @endif
                                         </td>
+                                        <td class="p-2 text-center">
+                                            <!-- Botón Editar -->
+                                            <a href="{{ route('profesores.edit', $profesor->id) }}"
+                                                class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg mr-2">
+                                                {{ __('Editar') }}
+                                            </a>
+
+                                            <!-- Botón Eliminar -->
+                                            <form action="{{ route('profesores.destroy', $profesor->id) }}"
+                                                method="POST"
+                                                onsubmit="return confirm('{{ __('¿Estás seguro de que deseas eliminar este profesor?') }}');"
+                                                class="inline-block">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit"
+                                                    class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg">
+                                                    {{ __('Eliminar') }}
+                                                </button>
+                                            </form>
+                                        </td>
                                     </tr>
                                 @endforeach
                             </tbody>
-                            @if ($profesores->isEmpty())
-                                <p class="text-red-500">No hay profesores registrados.</p>
-                            @else
-                                <pre>{{ print_r($profesores->toArray(), true) }}</pre>
-                            @endif
                         </table>
                     </div>
 

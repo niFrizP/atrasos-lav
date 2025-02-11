@@ -9,20 +9,29 @@ use Illuminate\Http\Request;
 class CursoController extends Controller
 {
     /**
-     * Muestra los grados disponibles con sus cursos.
+     * Muestra la lista de grados disponibles.
      */
     public function index()
     {
-        $grados = Grado::with('cursos.profesorActual.usuario')->get();
+        $grados = Grado::with('cursos')->get();
         return view('cursos.index', compact('grados'));
     }
 
     /**
-     * Muestra un curso con sus estudiantes y profesor jefe actual.
+     * Muestra los cursos de un grado específico.
      */
     public function show($id)
     {
-        $curso = Curso::with(['estudiantes', 'profesorActual.usuario'])->findOrFail($id);
-        return view('cursos.show', compact('curso'));
+        $grado = Grado::with('cursos')->findOrFail($id);
+        return view('cursos.show', compact('grado'));
+    }
+
+    /**
+     * Muestra los estudiantes de un curso específico.
+     */
+    public function showCurso($id)
+    {
+        $curso = Curso::with('estudiantes')->findOrFail($id);
+        return view('cursos.curso', compact('curso'));
     }
 }
