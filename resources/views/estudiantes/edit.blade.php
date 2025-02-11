@@ -18,40 +18,45 @@
                         <!-- Nombre -->
                         <div class="mb-4">
                             <x-input-label for="nomape" :value="__('Nombre Completo')" />
-                            <x-text-input id="nomape" class="block mt-1 w-full" type="text" name="nomape" value="{{ $estudiante->nomape }}" required />
+                            <x-text-input id="nomape" class="block mt-1 w-full" type="text" name="nomape"
+                                value="{{ $estudiante->nomape }}" required />
                             <x-input-error :messages="$errors->get('nomape')" class="mt-2" />
                         </div>
 
                         <!-- RUT -->
                         <div class="mb-4">
                             <x-input-label for="rut" :value="__('RUT')" />
-                            <x-text-input id="rut" class="block mt-1 w-full" type="text" name="rut" value="{{ $estudiante->rut }}" required />
+                            <x-text-input id="rut" class="block mt-1 w-full" type="text" name="rut"
+                                value="{{ $estudiante->rut }}" required />
                             <x-input-error :messages="$errors->get('rut')" class="mt-2" />
                         </div>
 
                         <!-- Correo -->
                         <div class="mb-4">
                             <x-input-label for="correo" :value="__('Correo Electrónico')" />
-                            <x-text-input id="correo" class="block mt-1 w-full" type="email" name="correo" value="{{ $estudiante->correo }}" />
+                            <x-text-input id="correo" class="block mt-1 w-full" type="email" name="correo"
+                                value="{{ $estudiante->correo }}" />
                             <x-input-error :messages="$errors->get('correo')" class="mt-2" />
                         </div>
 
                         <!-- Teléfono -->
                         <div class="mb-4">
                             <x-input-label for="telefono" :value="__('Teléfono')" />
-                            <x-text-input id="telefono" class="block mt-1 w-full" type="text" name="telefono" value="{{ $estudiante->telefono }}" />
+                            <x-text-input id="telefono" class="block mt-1 w-full" type="text" name="telefono"
+                                value="{{ $estudiante->telefono }}" />
                             <x-input-error :messages="$errors->get('telefono')" class="mt-2" />
                         </div>
 
                         <!-- Curso -->
                         <div class="mb-4">
                             <x-input-label for="curso_id" :value="__('Curso')" />
-                            <select name="curso_id" id="curso_id"
-                                class="block mt-1 w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:text-white">
-                                <option value="">{{ __('Sin curso') }}</option>
+                            <select id="curso_id" name="curso_id"
+                                class="block mt-1 w-full border-gray-300 rounded-md shadow-sm">
+                                <option value="">{{ __('Selecciona un curso') }}</option>
                                 @foreach ($cursos as $curso)
-                                    <option value="{{ $curso->id }}" {{ $estudiante->curso_id == $curso->id ? 'selected' : '' }}>
-                                        {{ $curso->codigo }}
+                                    <option value="{{ $curso->id }}"
+                                        {{ $estudiante->curso && $estudiante->curso->id == $curso->id ? 'selected' : '' }}>
+                                        {{ $curso->codigo }} - {{ $curso->grado->nombre }}
                                     </option>
                                 @endforeach
                             </select>

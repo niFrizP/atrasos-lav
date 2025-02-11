@@ -49,13 +49,13 @@
                             <x-input-label for="curso_id" :value="__('Curso')" />
                             <select name="curso_id" id="curso_id"
                                 class="block mt-1 w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:text-white">
-                                <option value="">{{ __('Sin curso') }}</option>
+                                <option value="">{{ __('Selecciona un curso') }}</option>
 
                                 <!-- Pre-Básica -->
                                 <optgroup label="Pre-Básica" style="font-weight: bold;">
                                     @foreach ($cursos as $curso)
                                         @if ($curso->grado_id == 1)
-                                            <option value="{{ $curso->id }}">{{ $curso->codigo }}</option>
+                                            <option value="{{ $curso->id }}">{{ $curso->codigo }} - {{ $curso->grado->nombre }}</option>
                                         @endif
                                     @endforeach
                                 </optgroup>

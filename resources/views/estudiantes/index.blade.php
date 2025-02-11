@@ -25,7 +25,8 @@
                                     <th class="border border-gray-300 dark:border-gray-600 p-2">{{ __('Nombre') }}</th>
                                     <th class="border border-gray-300 dark:border-gray-600 p-2">{{ __('RUT') }}</th>
                                     <th class="border border-gray-300 dark:border-gray-600 p-2">{{ __('Curso') }}</th>
-                                    <th class="border border-gray-300 dark:border-gray-600 p-2">{{ __('Acciones') }}</th>
+                                    <th class="border border-gray-300 dark:border-gray-600 p-2">{{ __('Acciones') }}
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -34,7 +35,7 @@
                                         <td class="p-2">{{ $estudiante->nomape }}</td>
                                         <td class="p-2">{{ number_format((int) $estudiante->rut, 0, '.', '-') }}</td>
                                         <td class="p-2">
-                                            {{ $estudiante->curso ? $estudiante->curso->codigo : __('Sin curso') }}
+                                            {{ $estudiante->curso ? $estudiante->curso->codigo . ' - ' . $estudiante->curso->grado->nombre : __('Sin curso') }}
                                         </td>
                                         <td class="p-2 flex space-x-2">
                                             <a href="{{ route('estudiantes.show', $estudiante) }}"
@@ -45,7 +46,8 @@
                                                 class="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-md">
                                                 {{ __('Editar') }}
                                             </a>
-                                            <form action="{{ route('estudiantes.disable', $estudiante) }}" method="POST">
+                                            <form action="{{ route('estudiantes.disable', $estudiante) }}"
+                                                method="POST">
                                                 @csrf
                                                 @method('PATCH')
                                                 <button type="submit"
