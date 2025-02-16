@@ -58,7 +58,7 @@
                         <div class="mb-4">
                             <x-input-label for="curso_id" :value="__('Asignar Curso (Jefe de Curso)')" />
                             <select id="curso_id" name="curso_id"
-                                class="block mt-1 w-full border-gray-300 rounded-md shadow-sm">
+                                class="form-select bg-white dark:bg-gray-800 dark:text-gray-300 border-gray-300 dark:border-gray-600 focus:ring focus:ring-indigo-200 dark:focus:ring-indigo-500 rounded-md shadow-sm">
                                 <option value="">{{ __('Selecciona un curso') }}</option>
                                 @foreach ($cursos as $curso)
                                     <option value="{{ $curso->id }}">

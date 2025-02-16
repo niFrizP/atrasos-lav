@@ -11,6 +11,16 @@
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <h1 class="text-2xl font-bold mb-4">{{ __('Grados Disponibles') }}</h1>
 
+                    <!-- Buscador -->
+                    <form method="GET" action="{{ route('cursos.index') }}" class="mb-4">
+                        <input type="text" name="search" placeholder="Buscar por nombre, curso o RUT"
+                            class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:text-white">
+                        <button type="submit"
+                            class="mt-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg">
+                            Buscar
+                        </button>
+                    </form>
+
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         @foreach ($grados as $grado)
                             <a href="{{ route('cursos.show', $grado->id) }}"

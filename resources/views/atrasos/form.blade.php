@@ -22,7 +22,9 @@
                         <!-- Estudiante -->
                         <div class="mb-4">
                             <x-input-label for="estudiante_id" :value="__('Estudiante')" />
-                            <select name="estudiante_id" id="estudiante_id" class="block mt-1 w-full" required>
+                            <select name="estudiante_id" id="estudiante_id"
+                                class="form-select bg-white dark:bg-gray-800 dark:text-gray-300 border-gray-300 dark:border-gray-600 focus:ring focus:ring-indigo-200 dark:focus:ring-indigo-500 rounded-md shadow-sm"
+                                required>
                                 <option value="">{{ __('Seleccione un estudiante') }}</option>
                                 @foreach ($estudiantes as $estudiante)
                                     <option value="{{ $estudiante->id }}"
@@ -38,7 +40,8 @@
 
 
                         <!-- Fecha -->
-                        <div class="mb-4">
+                        <div
+                            class="form-select bg-white dark:bg-gray-800 dark:text-gray-300 border-gray-300 dark:border-gray-600 focus:ring focus:ring-indigo-200 dark:focus:ring-indigo-500 rounded-md shadow-sm">
                             <x-input-label for="fecha" :value="__('Fecha')" />
                             <x-text-input id="fecha" class="block mt-1 w-full" type="date" name="fecha"
                                 value="{{ isset($atraso) ? $atraso->fecha : old('fecha') }}" required />
@@ -46,7 +49,7 @@
                         </div>
 
                         <!-- Motivo -->
-                        <div class="mb-4">
+                        <div class="form-select bg-white dark:bg-gray-800 dark:text-gray-300 border-gray-300 dark:border-gray-600 focus:ring focus:ring-indigo-200 dark:focus:ring-indigo-500 rounded-md shadow-sm">
                             <x-input-label for="motivo" :value="__('Motivo')" />
                             <textarea id="motivo" name="motivo" class="block mt-1 w-full" required>{{ isset($atraso) ? $atraso->motivo : old('motivo') }}</textarea>
                             <x-input-error :messages="$errors->get('motivo')" class="mt-2" />

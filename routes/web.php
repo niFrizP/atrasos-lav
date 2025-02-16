@@ -57,7 +57,7 @@ Route::get('estudiantes/create', [EstudianteController::class, 'create'])->name(
 Route::post('estudiantes', [EstudianteController::class, 'store'])->name('estudiantes.store'); // Guardar estudiante
 Route::get('estudiantes/{estudiante}', [EstudianteController::class, 'show'])->name('estudiantes.show'); // Mostrar detalle de un estudiante
 Route::get('estudiantes/{estudiante}/edit', [EstudianteController::class, 'edit'])->name('estudiantes.edit'); // Formulario de edición
-Route::put('estudiantes/{estudiante}', [EstudianteController::class, 'update'])->name('estudiantes.update'); // Actualizar estudiante
+Route::match(['put', 'patch'], 'estudiantes/{estudiante}', [EstudianteController::class, 'update'])->name('estudiantes.update'); // Actualizar estudiante
 Route::patch('estudiantes/{estudiante}/disable', [EstudianteController::class, 'disable'])->name('estudiantes.disable'); // Deshabilitar estudiante
 
 // Busquedas
