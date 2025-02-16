@@ -103,7 +103,19 @@
     <div :class="{ 'block': open, 'hidden': !open }" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                {{ __('Dashboard') }}
+                {{ __('Inicio') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('atrasos.index')" :active="request()->routeIs('atrasos.index')">
+                        {{ __('Atrasos') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('cursos.index')" :active="request()->routeIs('cursos.index')">
+                        {{ __('Cursos') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('estudiantes.index')" :active="request()->routeIs('estudiantes.index')">
+                        {{ __('Estudiantes') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('profesores.index')" :active="request()->routeIs('profesores.index')">
+                        {{ __('Profesores') }}
             </x-responsive-nav-link>
         </div>
 

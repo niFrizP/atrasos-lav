@@ -50,8 +50,8 @@
                         <!-- Curso -->
                         <div class="mb-4">
                             <x-input-label for="curso_id" :value="__('Curso')" />
-                            <select id="curso_id" name="curso_id"
-                                class="block mt-1 w-full border-gray-300 rounded-md shadow-sm">
+                            <select id="curso_id" name="curso_id" onchange="checkCursoChange()"
+                                class="form-select bg-white dark:bg-gray-800 dark:text-gray-300 border-gray-300 dark:border-gray-600 focus:ring focus:ring-indigo-200 dark:focus:ring-indigo-500 rounded-md shadow-sm">
                                 <option value="">{{ __('Selecciona un curso') }}</option>
                                 @foreach ($cursos as $curso)
                                     <option value="{{ $curso->id }}"
@@ -61,6 +61,14 @@
                                 @endforeach
                             </select>
                             <x-input-error :messages="$errors->get('curso_id')" class="mt-2" />
+                        </div>
+
+                        <!-- Campo de motivo de cambio, solo aparece si el curso cambia -->
+                        <div id="motivo_cambio_container" class="mb-4" style="display: none;">
+                            <x-input-label for="motivo_cambio" :value="__('Motivo de cambio')" />
+                            <x-text-input id="motivo_cambio" class="block mt-1 w-full" type="text"
+                                name="motivo_cambio" />
+                            <x-input-error :messages="$errors->get('motivo_cambio')" class="mt-2" />
                         </div>
 
                         <!-- Botones -->
@@ -75,6 +83,19 @@
                         </div>
                     </form>
 
+                    <script>
+                        function checkCursoChange() {
+                            const cursoOriginal = "{{ $estudiante->curso ? $estudiante->curso->id : '' }}";
+                            const cursoSeleccionado = document.getElementById('curso_id').value;
+                            const motivoContainer = document.getElementById('motivo_cambio_container');
+
+                            if (cursoSeleccionado && cursoSeleccionado !== cursoOriginal) {
+                                motivoContainer.style.display = 'block';
+                            } else {
+                                motivoContainer.style.display = 'none';
+                            }
+                        }
+                    </script>
                 </div>
             </div>
         </div>
