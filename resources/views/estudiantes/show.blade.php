@@ -17,7 +17,7 @@
                     </div>
 
                     <div class="mb-4">
-                        <p><strong>{{ __('RUT:') }}</strong> {{ number_format((int) $estudiante->rut, 0, '.', '-') }}
+                        <p><strong>{{ __('RUT:') }}</strong> {{ $estudiante->rut_formatted }}</p>
                         </p>
                     </div>
 

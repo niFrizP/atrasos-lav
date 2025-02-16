@@ -37,7 +37,7 @@
                                 @foreach ($estudiantes as $estudiante)
                                     <tr class="border border-gray-300 dark:border-gray-700">
                                         <td class="p-2">{{ $estudiante->nomape }}</td>
-                                        <td class="p-2">{{ number_format((int) $estudiante->rut, 0, '.', '-') }}</td>
+                                        <td class="p-2">{{ $estudiante->rut_formatted }}</td>
                                         <td class="p-2">
                                             {{ $estudiante->curso ? $estudiante->curso->codigo . ' - ' . $estudiante->curso->grado->nombre : __('Sin curso') }}
                                         </td>

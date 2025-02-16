@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -23,4 +24,20 @@ class Estudiante extends Model
     {
         return $this->hasMany(Atraso::class, 'estudiante_id');
     }
+
+    public function getRutFormattedAttribute()
+    {
+        $rut = (string) $this->rut;
+        $rut = preg_replace('/[^0-9kK]/', '', $rut); // Elimina cualquier caracter no numérico
+        $rut = strtoupper($rut); // Convierte a mayúsculas
+
+        if (strlen($rut) === 9) {
+            // Formato 99.999.999-9
+            return preg_replace('/^(\d{2})(\d{3})(\d{3})(\d{1})$/', '$1.$2.$3-$4', $rut);
+        } else {
+            // Formato 9.999.999-9
+            return preg_replace('/^(\d{1})(\d{3})(\d{3})(\d{1})$/', '$1.$2.$3-$4', $rut);
+        }
+    }
+    
 }

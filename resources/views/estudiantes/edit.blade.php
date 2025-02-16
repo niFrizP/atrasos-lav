@@ -24,12 +24,11 @@
                         </div>
 
                         <!-- RUT -->
-                        <div class="mb-4">
-                            <x-input-label for="rut" :value="__('RUT')" />
-                            <x-text-input id="rut" class="block mt-1 w-full" type="text" name="rut"
-                                value="{{ $estudiante->rut }}" required />
-                            <x-input-error :messages="$errors->get('rut')" class="mt-2" />
-                        </div>
+                        <x-input-label for="rut" :value="__('RUT')" />
+                        <x-text-input id="rut" class="block mt-1 w-full" type="text" name="rut"
+                            maxlength="12" value="{{ old('rut', $estudiante->rut) }}" required
+                            oninput="formatRut(this)" />
+                        <x-input-error :messages="$errors->get('rut')" class="mt-2" />
 
                         <!-- Correo -->
                         <div class="mb-4">
@@ -43,7 +42,7 @@
                         <div class="mb-4">
                             <x-input-label for="telefono" :value="__('Teléfono')" />
                             <x-text-input id="telefono" class="block mt-1 w-full" type="text" name="telefono"
-                                value="{{ $estudiante->telefono }}" />
+                                maxlength="9" value="{{ $estudiante->telefono }}" />
                             <x-input-error :messages="$errors->get('telefono')" class="mt-2" />
                         </div>
 
@@ -94,6 +93,18 @@
                             } else {
                                 motivoContainer.style.display = 'none';
                             }
+                        }
+
+                        function formatRut(input) {
+                            let value = input.value.replace(/\D/g, ''); // Elimina todo lo que no sea número
+                            if (value.length > 8) {
+                                // Si hay más de 8 dígitos, asumimos el formato con dos dígitos antes del guión
+                                value = value.replace(/^(\d{2})(\d{3})(\d{3})(\d{1})$/, '$1.$2.$3-$4');
+                            } else {
+                                // Si hay 8 dígitos o menos, asumimos el formato con un solo dígito antes del guión
+                                value = value.replace(/^(\d{1})(\d{3})(\d{3})(\d{1})$/, '$1.$2.$3-$4');
+                            }
+                            input.value = value; // Actualiza el valor del campo con el formato
                         }
                     </script>
                 </div>
