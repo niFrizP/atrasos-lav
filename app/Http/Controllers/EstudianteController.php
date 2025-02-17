@@ -46,7 +46,11 @@ class EstudianteController extends Controller
             'curso_id' => 'nullable|exists:cursos,id',
         ]);
 
-        Estudiante::create($request->all());
+        // Crear el estudiante
+        $estudiante = Estudiante::create($request->all());
+
+        // Generar el QR y guardarlo en la base de datos
+        $estudiante->generateQR();
 
         return redirect()->route('estudiantes.index')->with('success', 'Estudiante creado correctamente.');
     }
@@ -101,7 +105,6 @@ class EstudianteController extends Controller
                     'motivo_cambio' => $request->motivo_cambio,
                 ];
 
-
                 // Verificamos si las columnas curso_id_antes y curso_id_despues existen
                 if (Schema::hasColumn('his_cursos', 'curso_id_antes')) {
                     $data['curso_id_antes'] = $estudiante->curso_id;
@@ -117,6 +120,7 @@ class EstudianteController extends Controller
 
             // Actualizar curso en la tabla `estudiantes`
             $estudiante->update($request->except(['motivo_cambio']));
+            $estudiante->generateQR();
 
             DB::commit();
             return redirect()->route('estudiantes.index')->with('success', 'Estudiante actualizado correctamente.');

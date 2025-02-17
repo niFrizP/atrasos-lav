@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class Estudiante extends Model
 {
@@ -27,17 +28,37 @@ class Estudiante extends Model
 
     public function getRutFormattedAttribute()
     {
-        $rut = (string) $this->rut;
-        $rut = preg_replace('/[^0-9kK]/', '', $rut); // Elimina cualquier caracter no numérico
-        $rut = strtoupper($rut); // Convierte a mayúsculas
+        // Convertir a string y dejar solo dígitos o K
+        $rut = preg_replace('/[^0-9kK]/', '', (string) $this->rut);
+        $rut = strtoupper($rut);
 
+        // Manejar 8 dígitos + dígito verificador (9 caracteres)
         if (strlen($rut) === 9) {
-            // Formato 99.999.999-9
-            return preg_replace('/^(\d{2})(\d{3})(\d{3})(\d{1})$/', '$1.$2.$3-$4', $rut);
-        } else {
-            // Formato 9.999.999-9
-            return preg_replace('/^(\d{1})(\d{3})(\d{3})(\d{1})$/', '$1.$2.$3-$4', $rut);
+            // Ejemplo: 12.345.678-9
+            return preg_replace('/^(\d{2})(\d{3})(\d{3})([\dkK])$/', '$1.$2.$3-$4', $rut);
         }
+        // Manejar 7 dígitos + dígito verificador (8 caracteres)
+        elseif (strlen($rut) === 8) {
+            // Ejemplo: 1.234.567-K
+            return preg_replace('/^(\d{1})(\d{3})(\d{3})([\dkK])$/', '$1.$2.$3-$4', $rut);
+        }
+
+        // Fallback si no coincide con 8 o 9 caracteres
+        return $rut;
     }
-    
+
+    public function generateQR()
+    {
+        $data = json_encode([
+            'Nombre' => $this->nomape,
+            'RUT' => $this->rut,
+            'Curso' => $this->curso->codigo . ' - ' . $this->curso->grado->nombre,
+            'Correo' => $this->correo,
+            'Telefono' => $this->telefono,
+        ]);
+
+        $qrCode = QrCode::format('png')->size(200)->generate($data);
+        $this->qr = $qrCode; // Guardamos el QR en la BD
+        $this->save();
+    }
 }

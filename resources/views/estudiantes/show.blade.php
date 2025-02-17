@@ -10,31 +10,32 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <h1 class="text-2xl font-bold mb-4">{{ __('Datos del Estudiante') }}</h1>
-
-                    <!-- Datos del Estudiante -->
-                    <div class="mb-4">
-                        <p><strong>{{ __('Nombre Completo:') }}</strong> {{ $estudiante->nomape }}</p>
+                    <div class="flex justify-between items-start">
+                        <!-- Datos del Estudiante -->
+                        <div class="w-2/3">
+                            <p><strong>{{ __('Nombre Completo:') }}</strong> {{ $estudiante->nomape }}</p>
+                            <br>
+                            <p><strong>{{ __('RUT:') }}</strong> {{ $estudiante->rut_formatted }}</p>
+                            <br>
+                            <p><strong>{{ __('Correo Electrónico:') }}</strong>
+                                {{ $estudiante->correo ?? __('No registrado') }}</p>
+                            <br>
+                            <p><strong>{{ __('Teléfono:') }}</strong> {{ $estudiante->telefono ?? __('No registrado') }}
+                            </p>
+                            <br>
+                            <p><strong>{{ __('Curso:') }}</strong>
+                                {{ $estudiante->curso ? $estudiante->curso->codigo : __('Sin curso asignado') }}</p>
+                        </div>
                     </div>
-
-                    <div class="mb-4">
-                        <p><strong>{{ __('RUT:') }}</strong> {{ $estudiante->rut_formatted }}</p>
-                        </p>
+                    <!-- Columna para el QR -->
+                    <div class="flex justify-end">
+                        @if ($estudiante->qr)
+                            <div class="QRCard">
+                                <img src="data:image/png;base64,{{ base64_encode($estudiante->qr) }}" alt="Código QR"
+                                    class="mx-auto" width="150" height="150">
+                            </div>
+                        @endif
                     </div>
-
-                    <div class="mb-4">
-                        <p><strong>{{ __('Correo Electrónico:') }}</strong>
-                            {{ $estudiante->correo ?? __('No registrado') }}</p>
-                    </div>
-
-                    <div class="mb-4">
-                        <p><strong>{{ __('Teléfono:') }}</strong> {{ $estudiante->telefono ?? __('No registrado') }}</p>
-                    </div>
-
-                    <div class="mb-4">
-                        <p><strong>{{ __('Curso:') }}</strong>
-                            {{ $estudiante->curso ? $estudiante->curso->codigo : __('Sin curso asignado') }}</p>
-                    </div>
-
                     <!-- Botones de acciones -->
                     <div class="flex justify-end mt-6 space-x-2">
                         <a href="{{ route('estudiantes.edit', $estudiante) }}"

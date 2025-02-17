@@ -96,15 +96,15 @@
                         }
 
                         function formatRut(input) {
-                            let value = input.value.replace(/\D/g, ''); // Elimina todo lo que no sea número
-                            if (value.length > 8) {
-                                // Si hay más de 8 dígitos, asumimos el formato con dos dígitos antes del guión
-                                value = value.replace(/^(\d{2})(\d{3})(\d{3})(\d{1})$/, '$1.$2.$3-$4');
-                            } else {
-                                // Si hay 8 dígitos o menos, asumimos el formato con un solo dígito antes del guión
-                                value = value.replace(/^(\d{1})(\d{3})(\d{3})(\d{1})$/, '$1.$2.$3-$4');
+                            let value = input.value.toUpperCase().replace(/[^0-9K]/g, ''); // Limpiamos el valor
+                            // Verificamos la longitud
+                            if (value.length === 9) {
+                                value = value.replace(/^(\d{2})(\d{3})(\d{3})([\dkK])$/, '$1.$2.$3-$4');
+                            } else if (value.length === 8) {
+                                value = value.replace(/^(\d{1})(\d{3})(\d{3})([\dkK])$/, '$1.$2.$3-$4');
                             }
-                            input.value = value; // Actualiza el valor del campo con el formato
+
+                            input.value = value;
                         }
                     </script>
                 </div>
