@@ -23,15 +23,7 @@ class Usuario extends Authenticatable
     }
 
     // Especifica los campos que se pueden asignar en masa.
-    protected $fillable = [
-        'nomape',
-        'rut',
-        'telefono',
-        'correo',
-        'password',
-        'activo', 
-        'rol_id'
-    ];
+    protected $fillable = ['nomape', 'rut', 'telefono', 'correo', 'password', 'activo', 'rol_id'];
 
     // Especifica el campo que se usará como nombre de usuario.
     public function getAuthIdentifierName()
@@ -50,7 +42,6 @@ class Usuario extends Authenticatable
     {
         return $this->hasOne(ProfesoresCurso::class, 'usuario_id')->where('activo', true);
     }
-
 
 
     // Oculta atributos sensibles.
