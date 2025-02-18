@@ -12,7 +12,7 @@
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <h1 class="text-2xl font-bold mb-4">{{ __('Editar Atraso') }}</h1>
 
-                    <form action="{{ route('atrasos.update', $atraso->id) }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('atrasos.update', $atraso) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
 
@@ -57,34 +57,41 @@
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
-
-                        <!-- Evidencia -->
+                        <!-- Campo de evidencia -->
                         <div class="mb-4">
                             <x-input-label for="evidencia" class="form-label">{{ __('Evidencia') }}</x-input-label>
-                            @if ($atraso->evidencia_url)
+                            @if ($atraso->evidencia)
                                 <div class="mt-2">
-                                    <a href="{{ $atraso->evidencia_url }}" target="_blank"
+                                    <a href="{{ Storage::url($atraso->evidencia) }}" target="_blank"
                                         class="text-blue-500 hover:text-blue-700">
                                         {{ __('Ver imagen actual') }}
                                     </a>
                                 </div>
                             @endif
                             <x-text-input id="evidencia" class="block mt-1 w-full" type="file" name="evidencia"
-                                accept="image/*" @error('evidencia')>
-                                    <x-input-error :messages="$errors->get('evidencia')" class="mt-2" />
-                                </x-text-input>
+                                accept="image/*">
+                            </x-text-input>
+
+                            <div class="text-sm text-gray-500 mt-1">
+                                <p>{{ __('Tamaño máximo: 2 MB') }}</p>
+                                <p>{{ __('Formatos permitidos: jpeg, png, jpg, gif, svg') }}</p>
                             </div>
 
-                            <!-- Botón de Enviar -->
-                            <div class="flex justify-end mt-6">
-                                <x-primary-button>
-                                    {{ __('Actualizar Atraso') }}
-                                </x-primary-button>
-                            </div>
-                        </form>
-                    </div>
+                            @error('evidencia')
+                                <x-input-error :messages="$errors->get('evidencia')" class="mt-2" />
+                            @enderror
+                        </div>
+
+                        <!-- Botón de Enviar -->
+                        <div class="flex justify-end mt-6">
+                            <x-primary-button>
+                                {{ __('Actualizar Atraso') }}
+                            </x-primary-button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
+    </div>
 
-    </x-app-layout>
+</x-app-layout>

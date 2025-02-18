@@ -29,6 +29,8 @@
                                     <th class="border border-gray-300 dark:border-gray-600 p-2">{{ __('Nombre') }}</th>
                                     <th class="border border-gray-300 dark:border-gray-600 p-2">{{ __('RUT') }}</th>
                                     <th class="border border-gray-300 dark:border-gray-600 p-2">{{ __('Curso') }}</th>
+                                    <th class="border border-gray-300 dark:border-gray-600 p-2">
+                                        {{ __('Total Atrasos') }}</th>
                                     <th class="border border-gray-300 dark:border-gray-600 p-2">{{ __('Acciones') }}
                                     </th>
                                 </tr>
@@ -41,6 +43,7 @@
                                         <td class="p-2">
                                             {{ $estudiante->curso ? $estudiante->curso->codigo . ' - ' . $estudiante->curso->grado->nombre : __('Sin curso') }}
                                         </td>
+                                        <td class="p-2 text-center">{{ $estudiante->atrasos_count }}</td>
                                         <td class="p-2 flex space-x-2">
                                             <a href="{{ route('estudiantes.show', $estudiante) }}"
                                                 class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">

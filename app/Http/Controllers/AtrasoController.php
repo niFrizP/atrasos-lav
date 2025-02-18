@@ -68,6 +68,14 @@ class AtrasoController extends Controller
         $curso_id = Estudiante::find($estudiante_id)->curso_id;
         // Obtener el año actual
         $anio_actual = Carbon::now()->year;
+        
+        // Verificar si se sube una evidencia y almacenarla en 'public/evidencias'
+        $evidencia = $request->file('evidencia')
+            ? $request->file('evidencia')->storeAs('public/evidencias', $request->file('evidencia')->getClientOriginalName()) // Usamos storeAs para definir la carpeta y el nombre del archivo
+            : null;
+
+        // Obtener la URL para la evidencia
+        $evidencia_url = $evidencia ? asset('storage/evidencias/' . basename($evidencia)) : null;
 
         // Crear el nuevo atraso en la tabla t_atr_estudiante
         Atraso::create([
@@ -76,9 +84,8 @@ class AtrasoController extends Controller
             'fecha_creacion' => now(),
             'inspector_id' => Auth::user()->id,
             'razon' => $request->razon,
-            'evidencia' => $request->file('evidencia') ? $request->file('evidencia')->store('evidencias') : null,
+            'evidencia' => $evidencia,  // Usamos la variable $evidencia que contiene la ruta
         ]);
-
 
         // Actualizar el contador de atrasos del curso en la tabla t_atr_curso
         DB::table('t_atr_curso')
@@ -133,11 +140,16 @@ class AtrasoController extends Controller
             'evidencia' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
+        // Verificar si se sube una nueva evidencia
+        $evidencia = $request->file('evidencia')
+            ? $request->file('evidencia')->store('evidencias', 'public')
+            : $atraso->evidencia;
+
         $atraso->update([
             'estudiante_id' => $request->estudiante_id,
             'fecha_atraso' => $request->fecha_atraso,
             'razon' => $request->razon,
-            'evidencia' => $request->file('evidencia') ? $request->file('evidencia')->store('evidencias') : $atraso->evidencia,
+            'evidencia' => $request->file('evidencia') ? $request->file('evidencia')->store('evidencias', 'public') : null,
         ]);
 
         return redirect()->route('atrasos.index')->with('success', 'Atraso actualizado correctamente.');

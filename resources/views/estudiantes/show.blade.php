@@ -29,6 +29,9 @@
                     </div>
                     <!-- Columna para el QR -->
                     <div class="flex justify-end">
+                        <p class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                            {{ __('QR del Estudiante') }}</p>
+                            <br><br>
                         @if ($estudiante->qr)
                             <div class="QRCard">
                                 <img src="data:image/png;base64,{{ base64_encode($estudiante->qr) }}" alt="Código QR"
@@ -49,6 +52,45 @@
                                 {{ __('Deshabilitar') }}
                             </button>
                         </form>
+                    </div>
+
+                    <!-- Atrasos registrados -->
+                    <h2 class="text-xl font-semibold mt-8">{{ __('Atrasos Registrados') }}</h2>
+                    <div class="overflow-x-auto mt-4">
+                        @if ($estudiante->atrasos->isEmpty())
+                            <p>{{ __('No hay atrasos registrados para este estudiante.') }}</p>
+                        @else
+                            <table class="w-full border border-gray-300 dark:border-gray-700">
+                                <thead class="bg-gray-200 dark:bg-gray-700">
+                                    <tr>
+                                        <th class="border border-gray-300 dark:border-gray-600 p-2">{{ __('Fecha') }}
+                                        </th>
+                                        <th class="border border-gray-300 dark:border-gray-600 p-2">
+                                            {{ __('Descripción') }}</th>
+                                        <th class="border border-gray-300 dark:border-gray-600 p-2">
+                                            {{ __('Acciones') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($estudiante->atrasos as $atraso)
+                                        <tr class="border border-gray-300 dark:border-gray-700">
+                                            <td class="p-2 text-center">{{ $atraso->fecha_atraso }}</td>
+                                            <td class="p-2 text-center">{{ $atraso->razon }}</td>
+                                            <td class="p-2 flex end space-x-2">
+                                                <a href="{{ route('atrasos.show', $atraso) }}"
+                                                    class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">
+                                                    {{ __('Ver') }}
+                                                </a>
+                                                <a href="{{ route('atrasos.edit', $atraso) }}"
+                                                    class="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-md">
+                                                    {{ __('Editar') }}
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        @endif
                     </div>
                 </div>
             </div>

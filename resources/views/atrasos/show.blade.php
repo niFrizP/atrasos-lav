@@ -52,28 +52,28 @@
                             <div class="mt-2">
                                 <a href="{{ $atraso->evidencia_url }}" target="_blank"
                                     class="text-blue-500 hover:text-blue-700">
-                                    {{ __('Ver imagen') }}
+                                    {{ __('Ver imagen actual') }}
                                 </a>
-                                <div class="mt-2">
-                                    <img src="{{ $atraso->evidencia_url }}" alt="Evidencia del Atraso"
-                                        class="max-w-xs">
-                                </div>
                             </div>
-                        @else
-                            <p>{{ __('No hay evidencia') }}</p>
-                        @endif
+                            <div class="mt-2">
+                                <img src="{{ $atraso->evidencia_url }}" alt="Evidencia del Atraso" class="max-w-xs">
+                            </div>
                     </div>
-
-                    <!-- Botón para volver -->
-                    <div class="mt-6">
-                        <a href="{{ route('atrasos.index') }}"
-                            class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white font-semibold rounded-lg">
-                            {{ __('Volver a la lista') }}
-                        </a>
-                    </div>
-
+                @else
+                    <p>{{ __('No hay evidencia') }}</p>
+                    @endif
                 </div>
+
+                <!-- Botón para volver -->
+                <div class="mt-6">
+                    <a href="{{ route('atrasos.index') }}"
+                        class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white font-semibold rounded-lg">
+                        {{ __('Volver a la lista') }}
+                    </a>
+                </div>
+
             </div>
         </div>
+    </div>
     </div>
 </x-app-layout>

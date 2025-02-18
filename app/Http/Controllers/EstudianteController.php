@@ -17,12 +17,17 @@ class EstudianteController extends Controller
      */
     public function index()
     {
-        $estudiantes = Estudiante::whereNotNull('estado_id')
+        // Obtener estudiantes con el conteo de atrasos
+        $estudiantes = Estudiante::with('curso') // Cargar la relación con el curso
+            ->withCount('atrasos') // Cargar el conteo de atrasos
+            ->whereNotNull('estado_id')
             ->orderBy('created_at', 'desc')
-            ->with('curso')
             ->get();
+
+        // Pasar los estudiantes a la vista
         return view('estudiantes.index', compact('estudiantes'));
     }
+
 
     /**
      * Mostrar formulario de creación de estudiante.
@@ -60,8 +65,13 @@ class EstudianteController extends Controller
      */
     public function show(Estudiante $estudiante)
     {
+        // Cargar los atrasos del estudiante
+        $estudiante->load('atrasos');  // Asegúrate de que esta relación exista
+
         return view('estudiantes.show', compact('estudiante'));
     }
+
+
 
     /**
      * Mostrar formulario de edición.

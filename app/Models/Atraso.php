@@ -17,10 +17,10 @@ class Atraso extends Model
         'evidencia'
     ];
 
-    // Relación: Un atraso pertenece a un estudiante.
+    // Relación inversa con Estudiante
     public function estudiante()
     {
-        return $this->belongsTo(Estudiante::class, 'estudiante_id');
+        return $this->belongsTo(Estudiante::class);
     }
 
     // Relación: Un atraso pertenece a un inspector.
@@ -41,7 +41,7 @@ class Atraso extends Model
         return $this->evidencia ? Storage::url($this->evidencia) : null;
     }
 
-        protected $dates = ['fecha_atraso'];
+    protected $dates = ['fecha_atraso'];
 
 
     public function getFechaAtrasoAttribute($value)
