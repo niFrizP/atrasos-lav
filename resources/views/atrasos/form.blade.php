@@ -1,58 +1,59 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ isset($atraso) ? __('Editar Atraso') : __('Registrar Atraso') }}
+            {{ __('Registrar Atraso') }}
         </h2>
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <h1 class="text-2xl font-bold mb-4">{{ isset($atraso) ? 'Editar Atraso' : 'Registrar Atraso' }}</h1>
+                    <h1 class="text-2xl font-bold mb-4">{{ __('Nuevo Atraso') }}</h1>
 
-                    <form method="POST"
-                        action="{{ isset($atraso) ? route('atrasos.update', $atraso->id) : route('atrasos.store') }}">
+                    <!-- Asegúrate de incluir el atributo enctype para subir archivos -->
+                    <form action="{{ route('atrasos.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
-                        @if (isset($atraso))
-                            @method('PUT')
-                        @endif
 
-                        <!-- Selección de Estudiante -->
-                        <!-- Estudiante -->
+                        <!-- Seleccionar Estudiante -->
                         <div class="mb-4">
                             <x-input-label for="estudiante_id" :value="__('Estudiante')" />
-                            <select name="estudiante_id" id="estudiante_id"
-                                class="form-select bg-white dark:bg-gray-800 dark:text-gray-300 border-gray-300 dark:border-gray-600 focus:ring focus:ring-indigo-200 dark:focus:ring-indigo-500 rounded-md shadow-sm"
-                                required>
-                                <option value="">{{ __('Seleccione un estudiante') }}</option>
+                            <select id="estudiante_id" name="estudiante_id"
+                                class="form-select bg-white dark:bg-gray-800 dark:text-gray-300 border-gray-300 dark:border-gray-600 focus:ring focus:ring-indigo-200 dark:focus:ring-indigo-500 rounded-md shadow-sm">
+                                <option value="">{{ __('Selecciona un estudiante') }}</option>
                                 @foreach ($estudiantes as $estudiante)
-                                    <option value="{{ $estudiante->id }}"
-                                        {{ isset($atraso) && $atraso->estudiante_id == $estudiante->id ? 'selected' : '' }}>
-                                        {{ $estudiante->nomape }} @if ($estudiante->curso)
-                                            ({{ $estudiante->curso->nombre }})
-                                        @endif
+                                    <option value="{{ $estudiante->id }}">
+                                        {{ $estudiante->nomape }} - {{ $estudiante->curso->grado->nombre }}
                                     </option>
                                 @endforeach
                             </select>
                             <x-input-error :messages="$errors->get('estudiante_id')" class="mt-2" />
                         </div>
 
-
-                        <!-- Fecha -->
-                        <div
-                            class="form-select bg-white dark:bg-gray-800 dark:text-gray-300 border-gray-300 dark:border-gray-600 focus:ring focus:ring-indigo-200 dark:focus:ring-indigo-500 rounded-md shadow-sm">
-                            <x-input-label for="fecha" :value="__('Fecha')" />
-                            <x-text-input id="fecha" class="block mt-1 w-full" type="date" name="fecha"
-                                value="{{ isset($atraso) ? $atraso->fecha : old('fecha') }}" required />
-                            <x-input-error :messages="$errors->get('fecha')" class="mt-2" />
+                        <!-- Fecha del Atraso -->
+                        <div class="mb-4">
+                            <x-input-label for="fecha_atraso" :value="__('Fecha y Hora del Atraso')" />
+                            <x-text-input id="fecha_atraso"
+                                class="form-select bg-white dark:bg-gray-800 dark:text-gray-300 border-gray-300 dark:border-gray-600 focus:ring focus:ring-indigo-200 dark:focus:ring-indigo-500 rounded-md shadow-sm"
+                                type="datetime-local" name="fecha_atraso" required />
+                            <x-input-error :messages="$errors->get('fecha_atraso')" class="mt-2" />
                         </div>
 
-                        <!-- Motivo -->
-                        <div class="form-select bg-white dark:bg-gray-800 dark:text-gray-300 border-gray-300 dark:border-gray-600 focus:ring focus:ring-indigo-200 dark:focus:ring-indigo-500 rounded-md shadow-sm">
-                            <x-input-label for="motivo" :value="__('Motivo')" />
-                            <textarea id="motivo" name="motivo" class="block mt-1 w-full" required>{{ isset($atraso) ? $atraso->motivo : old('motivo') }}</textarea>
-                            <x-input-error :messages="$errors->get('motivo')" class="mt-2" />
+                        <!-- Razón del Atraso -->
+                        <div class="mb-4">
+                            <x-input-label for="razon" :value="__('Razón')" />
+                            <textarea id="razon" name="razon"
+                                class="form-select block mt-1 w-full bg-white dark:bg-gray-800 dark:text-gray-300 border-gray-300 dark:border-gray-600 focus:ring focus:ring-indigo-200 dark:focus:ring-indigo-500 rounded-md shadow-sm"
+                                required placeholder="Motivo del atraso"></textarea>
+                            <x-input-error :messages="$errors->get('razon')" class="mt-2" />
+                        </div>
+
+                        <!-- Evidencia (opcional) -->
+                        <div class="mb-4">
+                            <x-input-label for="evidencia" :value="__('Evidencia (opcional)')" />
+                            <x-text-input id="evidencia" class="block mt-1 w-full" type="file" name="evidencia"
+                                accept="image/*" />
+                            <x-input-error :messages="$errors->get('evidencia')" class="mt-2" />
                         </div>
 
                         <!-- Botones -->
@@ -62,12 +63,23 @@
                                 {{ __('Cancelar') }}
                             </a>
                             <x-primary-button>
-                                {{ isset($atraso) ? __('Actualizar') : __('Registrar') }}
+                                {{ __('Guardar') }}
                             </x-primary-button>
                         </div>
                     </form>
+
                 </div>
             </div>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/js/select2.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            $('#estudiante_id').select2({
+                placeholder: 'Selecciona un estudiante',
+                allowClear: true,
+            });
+        });
+    </script>
 </x-app-layout>

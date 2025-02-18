@@ -37,8 +37,9 @@
                                     <tr class="border border-gray-300 dark:border-gray-700">
                                         <td class="p-2">{{ $profesor->nomape }}</td>
                                         <td class="p-2">
-                                            @if ($profesor->curso)
-                                                {{ $profesor->curso->codigo }} ({{ $profesor->curso->grado->nombre }})
+                                            @if ($profesor->cursoActual)
+                                                {{ $profesor->cursoActual->codigo }}
+                                                ({{ $profesor->cursoActual->grado->nombre }})
                                             @else
                                                 <span class="text-gray-500">{{ __('Sin curso asignado') }}</span>
                                             @endif

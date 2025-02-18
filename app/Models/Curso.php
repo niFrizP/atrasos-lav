@@ -18,6 +18,16 @@ class Curso extends Model
         return $this->belongsTo(Grado::class, 'grado_id');
     }
 
+    public function usuarios()
+    {
+        return $this->belongsToMany(
+            Usuario::class,
+            'profesores_cursos',
+            'curso_id',
+            'usuario_id'
+        );
+    }
+
     // Un curso tiene muchos estudiantes.
     public function estudiantes()
     {
@@ -25,9 +35,9 @@ class Curso extends Model
     }
 
     // Un curso tiene muchos profesores.
-    public function cursos()
+    public function profesoresCursos()
     {
-        return $this->hasMany(ProfesoresCurso::class, 'usuario_id');
+        return $this->hasMany(ProfesoresCurso::class, 'curso_id');
     }
 
     // En tu modelo Estudiante
@@ -38,9 +48,15 @@ class Curso extends Model
 
 
     // Un curso tiene un profesor jefe.
-    public function cursoActual()
+    public function profesorCursoActivo()
     {
-        return $this->hasOne(ProfesoresCurso::class, 'usuario_id')->where('activo', true);
+        return $this->hasOne(ProfesoresCurso::class, 'curso_id')
+            ->where('activo', 1);
+    }
+
+    public function profesorJefe()
+    {
+        return $this->belongsTo(Usuario::class, 'profesor_jefe_id');
     }
 
 
@@ -49,4 +65,5 @@ class Curso extends Model
     {
         return $this->hasManyThrough(Atraso::class, Estudiante::class, 'curso_id', 'estudiante_id');
     }
+    
 }

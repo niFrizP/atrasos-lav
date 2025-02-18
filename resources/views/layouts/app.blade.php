@@ -18,6 +18,9 @@
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js']) <!-- Vite.js para Laravel -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script> <!-- CDN para Alpine.js -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/css/select2.min.css" rel="stylesheet" />
+    <!-- CDN para Select2 -->
+
 
 </head>
 
@@ -41,5 +44,15 @@
         </main>
     </div>
 </body>
+
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/js/select2.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        $('#estudiante_id').select2({
+            placeholder: 'Selecciona un estudiante',
+            allowClear: true,
+        });
+    });
+</script>
 
 </html>

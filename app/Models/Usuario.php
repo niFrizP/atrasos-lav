@@ -32,17 +32,42 @@ class Usuario extends Authenticatable
     }
 
     // Relación: Un usuario puede tener muchos cursos.
-    public function cursos()
+    public function profesoresCursos()
     {
         return $this->hasMany(ProfesoresCurso::class, 'usuario_id');
     }
 
+
     // Un usuario puede tener un curso activo.
-    public function cursoActual()
+    public function profesorCursoActivo()
     {
-        return $this->hasOne(ProfesoresCurso::class, 'usuario_id')->where('activo', true);
+        return $this->hasOne(ProfesoresCurso::class, 'usuario_id')
+            ->where('activo', 1);
     }
 
+    // Un usuario puede tener un curso activo.
+    public function cursoActivo()
+    {
+        return $this->hasOneThrough(
+            Curso::class,            // Modelo final
+            ProfesoresCurso::class,  // Modelo intermedio (pivot)
+            'usuario_id',            // Foreign key en pivot (profesores_cursos)
+            'id',                    // Local key en cursos
+            'id',                    // Local key en usuarios
+            'curso_id'               // Foreign key en pivot (profesores_cursos)
+        )->where('profesores_cursos.activo', 1);
+    }
+
+    // Un usuario puede tener muchos cursos.
+    public function cursos()
+    {
+        return $this->belongsToMany(Curso::class, 'profesores_cursos', 'usuario_id', 'curso_id');
+    }
+
+    public function cursoActual()
+    {
+        return $this->hasOne(Curso::class, 'profesor_jefe_id', 'id');
+    }
 
     // Oculta atributos sensibles.
     protected $hidden = [

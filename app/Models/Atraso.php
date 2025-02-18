@@ -1,7 +1,9 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Atraso extends Model
 {
@@ -11,8 +13,8 @@ class Atraso extends Model
         'fecha_atraso',
         'fecha_creacion',
         'inspector_id',
-        'razon'
-        // Puedes incluir 'evidencia' si la manejas.
+        'razon',
+        'evidencia'
     ];
 
     // Relación: Un atraso pertenece a un estudiante.
@@ -26,5 +28,34 @@ class Atraso extends Model
     {
         return $this->belongsTo(Usuario::class, 'inspector_id');
     }
-    
+
+    // Relación: Un atraso pertenece a un curso.
+    public function curso()
+    {
+        return $this->belongsTo(Curso::class, 'curso_id');
+    }
+
+    // obtener la url de la evidencia
+    public function getEvidenciaUrlAttribute()
+    {
+        return $this->evidencia ? Storage::url($this->evidencia) : null;
+    }
+
+        protected $dates = ['fecha_atraso'];
+
+
+    public function getFechaAtrasoAttribute($value)
+    {
+        return date('d/m/Y H:i', strtotime($value));
+    }
+
+    public function getFechaCreacionAttribute($value)
+    {
+        return date('d/m/Y H:i', strtotime($value));
+    }
+
+    public function razon()
+    {
+        return $this->razon;
+    }
 }

@@ -18,7 +18,7 @@ class ProfesorController extends Controller
         // Obtener profesores con rol_id 3 (Profesor) y que están activos
         $profesores = Usuario::where('rol_id', 3)
             ->where('activo', 1)
-            ->with('cursos.grado')
+            ->with('cursoActual.grado')
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -110,14 +110,18 @@ class ProfesorController extends Controller
     // Muestra el formulario de edición de un profesor
     public function edit($id)
     {
-        $profesor = Usuario::findOrFail($id);
-        $cursos = Curso::whereNull('profesor_jefe_id')->orWhere('profesor_jefe_id', $profesor->id)->get(); // Cursos disponibles o asignados al profesor
+        // Obtener el profesor que queremos editar
+        $profesor = Usuario::with('cursoActual')->findOrFail($id);
+        // Obtener todos los cursos
+        $cursos = Curso::all();
         return view('profesores.edit', compact('profesor', 'cursos'));
     }
+
 
     // Actualiza los datos de un profesor
     public function update(Request $request, $id)
     {
+        // Obtener el profesor
         $profesor = Usuario::findOrFail($id);
 
         // Validar los datos
@@ -137,15 +141,32 @@ class ProfesorController extends Controller
             'telefono' => $request->telefono,
         ]);
 
-        // Asignar curso si se selecciona
+        // Limpiar el profesor_jefe_id de su curso anterior si tenía asignado
+        if ($profesor->cursoActivo()) {
+            Curso::where('profesor_jefe_id', $profesor->id)->update(['profesor_jefe_id' => null]);
+        }
+
+        // Asignar el nuevo curso, si se seleccionó
         if ($request->curso_id) {
-            $curso = Curso::find($request->curso_id);
+            // Obtener el curso seleccionado
+            $curso = Curso::findOrFail($request->curso_id);
+
+            // Asignar el profesor jefe al curso
             $curso->profesor_jefe_id = $profesor->id;
             $curso->save();
+
+            // Crear el registro en la tabla profesores_cursos
+            ProfesoresCurso::create([
+                'curso_id' => $curso->id,
+                'usuario_id' => $profesor->id,
+                'anio' => date('Y'),  // Usamos el año actual
+                'activo' => 1,  // Indicar que este registro está activo
+            ]);
         }
 
         return redirect()->route('profesores.index')->with('success', 'Profesor actualizado correctamente.');
     }
+
 
     // Desactivar un profesor
     public function destroy($id)

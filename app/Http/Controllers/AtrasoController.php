@@ -5,6 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\Atraso;
 use App\Models\Estudiante;
 use Illuminate\Http\Request;
+use App\Models\ProfesoresCurso;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Curso;
+use App\Models\ContAtrasos;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+
+
 
 class AtrasoController extends Controller
 {
@@ -20,10 +28,10 @@ class AtrasoController extends Controller
             $search = $request->input('search');
             $query->whereHas('estudiante', function ($q) use ($search) {
                 $q->where('nomape', 'like', "%$search%")
-                  ->orWhere('rut', 'like', "%$search%")
-                  ->orWhereHas('curso', function ($c) use ($search) {
-                      $c->where('codigo', 'like', "%$search%");
-                  });
+                    ->orWhere('rut', 'like', "%$search%")
+                    ->orWhereHas('curso', function ($c) use ($search) {
+                        $c->where('codigo', 'like', "%$search%");
+                    });
             });
         }
 
@@ -46,22 +54,54 @@ class AtrasoController extends Controller
      */
     public function store(Request $request)
     {
+        // Validación
         $request->validate([
             'estudiante_id' => 'required|exists:estudiantes,id',
             'fecha_atraso' => 'required|date',
             'razon' => 'required|string|max:500',
+            'evidencia' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
+        // Obtener el id del estudiante
+        $estudiante_id = $request->estudiante_id;
+        // Obtener el curso_id del estudiante
+        $curso_id = Estudiante::find($estudiante_id)->curso_id;
+        // Obtener el año actual
+        $anio_actual = Carbon::now()->year;
+
+        // Crear el nuevo atraso en la tabla t_atr_estudiante
         Atraso::create([
-            'estudiante_id' => $request->estudiante_id,
+            'estudiante_id' => $estudiante_id,
             'fecha_atraso' => $request->fecha_atraso,
             'fecha_creacion' => now(),
-            'inspector_id' => \Illuminate\Support\Facades\Auth::user()->id, // ID del usuario actual
+            'inspector_id' => Auth::user()->id,
             'razon' => $request->razon,
+            'evidencia' => $request->file('evidencia') ? $request->file('evidencia')->store('evidencias') : null,
         ]);
+
+
+        // Actualizar el contador de atrasos del curso en la tabla t_atr_curso
+        DB::table('t_atr_curso')
+            ->updateOrInsert(
+                ['curso_id' => $curso_id],
+                ['total_atrasos' => Atraso::whereHas('estudiante', function ($q) use ($curso_id) {
+                    $q->where('curso_id', $curso_id);
+                })->count()]
+            );
+
+        // Actualizar o crear el registro en la tabla t_atr_estudiante
+        $contAtrasos = ContAtrasos::firstOrCreate(
+            ['estudiante_id' => $estudiante_id, 'anio' => $anio_actual],
+            ['total_atrasos' => 0]
+        );
+
+        // Incrementar el total de atrasos
+        $contAtrasos->increment('total_atrasos');
 
         return redirect()->route('atrasos.index')->with('success', 'Atraso registrado correctamente.');
     }
+
+
 
     /**
      * Mostrar detalles de un atraso.
@@ -76,8 +116,9 @@ class AtrasoController extends Controller
      */
     public function edit(Atraso $atraso)
     {
+        // Asegúrate de que puedes obtener el listado de estudiantes y el atraso específico
         $estudiantes = Estudiante::with('curso')->get();
-        return view('atrasos.form', compact('atraso', 'estudiantes'));
+        return view('atrasos.edit', compact('atraso', 'estudiantes'));
     }
 
     /**
@@ -89,12 +130,14 @@ class AtrasoController extends Controller
             'estudiante_id' => 'required|exists:estudiantes,id',
             'fecha_atraso' => 'required|date',
             'razon' => 'required|string|max:500',
+            'evidencia' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         $atraso->update([
             'estudiante_id' => $request->estudiante_id,
             'fecha_atraso' => $request->fecha_atraso,
             'razon' => $request->razon,
+            'evidencia' => $request->file('evidencia') ? $request->file('evidencia')->store('evidencias') : $atraso->evidencia,
         ]);
 
         return redirect()->route('atrasos.index')->with('success', 'Atraso actualizado correctamente.');
@@ -105,6 +148,37 @@ class AtrasoController extends Controller
      */
     public function destroy(Atraso $atraso)
     {
+        // Especificar el formato correcto de la fecha
+        $anio_atraso = Carbon::createFromFormat('d/m/Y H:i', $atraso->fecha_atraso)->year;
+
+        // Guardamos el estudiante, curso y el año del atraso a eliminar
+        $estudiante_id = $atraso->estudiante_id;
+        $curso_id = $atraso->estudiante->curso_id;
+
+        // Eliminamos el atraso
+        $atraso->delete();
+
+        // Recalculamos el total de atrasos para ese estudiante en el año correspondiente
+        $nuevo_total = Atraso::where('estudiante_id', $estudiante_id)
+            ->whereYear('fecha_atraso', $anio_atraso)
+            ->count();
+
+        // 📌 **Actualizar el total de atrasos del curso**
+        DB::table('t_atr_curso')
+            ->updateOrInsert(
+                ['curso_id' => $curso_id],
+                ['total_atrasos' => Atraso::whereHas('estudiante', function ($q) use ($curso_id) {
+                    $q->where('curso_id', $curso_id);
+                })->count()]
+            );
+
+        // Actualizamos o creamos el registro en la tabla t_atr_estudiante
+        DB::table('t_atr_estudiante')
+            ->updateOrInsert(
+                ['estudiante_id' => $estudiante_id, 'anio' => $anio_atraso],
+                ['total_atrasos' => $nuevo_total]
+            );
+
         $atraso->delete();
         return redirect()->route('atrasos.index')->with('success', 'Atraso eliminado correctamente.');
     }

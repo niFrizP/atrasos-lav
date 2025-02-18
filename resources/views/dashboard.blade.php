@@ -29,7 +29,7 @@
                         Buscar
                     </button>
                 </form>
-                
+
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <h1 class="text-2xl mb-4">Métricas</h1>
                     <p>Cantidad de atrasos: {{ $cantidadAtrasos }}</p>

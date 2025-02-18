@@ -1,17 +1,79 @@
-@extends('layouts.app')
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+            {{ __('Detalle del Atraso') }}
+        </h2>
+    </x-slot>
 
-@section('content')
-<div class="container">
-    <h1>Detalles del Atraso</h1>
+    <div class="py-12">
+        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900 dark:text-gray-100">
 
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">Estudiante: {{ $atraso->estudiante->nombre }}</h5>
-            <p class="card-text"><strong>Curso:</strong> {{ $atraso->estudiante->curso->nombre }}</p>
-            <p class="card-text"><strong>Fecha:</strong> {{ $atraso->fecha }}</p>
-            <p class="card-text"><strong>Motivo:</strong> {{ $atraso->motivo }}</p>
-            <a href="{{ route('atrasos.index') }}" class="btn btn-secondary">Volver al listado</a>
+                    <h1 class="text-2xl font-bold mb-6">{{ __('Detalle del Atraso') }}</h1>
+
+                    <!-- Estudiante -->
+                    <div class="mb-4">
+                        <strong>{{ __('Estudiante:') }}</strong>
+                        {{ $atraso->estudiante->nomape }} ({{ $atraso->estudiante->rut }})
+                    </div>
+
+                    <!-- Si deseas mostrar el curso asociado al estudiante -->
+                    @if ($atraso->estudiante->relationLoaded('curso') && $atraso->estudiante->curso)
+                        <div class="mb-4">
+                            <strong>{{ __('Curso:') }}</strong>
+                            {{ $atraso->estudiante->curso->nombre ?? __('No definido') }}
+                        </div>
+                    @endif
+
+                    <!-- Fecha del Atraso -->
+                    <div class="mb-4">
+                        <strong>{{ __('Fecha y Hora del Atraso:') }}</strong>
+                        {{ $atraso->fecha_atraso }}
+                    </div>
+
+                    <!-- Inspector -->
+                    <div class="mb-4">
+                        <strong>{{ __('Inspector:') }}</strong>
+                        {{ $atraso->inspector->nomape ?? __('No definido') }}
+                    </div>
+
+
+                    <!-- Razón del Atraso -->
+                    <div class="mb-4">
+                        <strong>{{ __('Razón:') }}</strong>
+                        <p>{{ $atraso->razon }}</p>
+                    </div>
+
+                    <!-- Evidencia -->
+                    <div class="mb-4">
+                        <strong>{{ __('Evidencia:') }}</strong>
+                        @if ($atraso->evidencia_url)
+                            <div class="mt-2">
+                                <a href="{{ $atraso->evidencia_url }}" target="_blank"
+                                    class="text-blue-500 hover:text-blue-700">
+                                    {{ __('Ver imagen') }}
+                                </a>
+                                <div class="mt-2">
+                                    <img src="{{ $atraso->evidencia_url }}" alt="Evidencia del Atraso"
+                                        class="max-w-xs">
+                                </div>
+                            </div>
+                        @else
+                            <p>{{ __('No hay evidencia') }}</p>
+                        @endif
+                    </div>
+
+                    <!-- Botón para volver -->
+                    <div class="mt-6">
+                        <a href="{{ route('atrasos.index') }}"
+                            class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white font-semibold rounded-lg">
+                            {{ __('Volver a la lista') }}
+                        </a>
+                    </div>
+
+                </div>
+            </div>
         </div>
     </div>
-</div>
-@endsection
+</x-app-layout>

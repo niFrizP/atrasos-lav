@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -6,12 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 class ProfesoresCurso extends Model
 {
     protected $table = 'profesores_cursos';
-    protected $fillable = ['profesor_id', 'curso_id'];
-
+    protected $fillable = [
+        'curso_id',
+        'usuario_id',
+        'anio',
+        'activo',
+    ];
     // Relación: Un profesor puede tener muchos cursos.
-    public function profesor()
+    public function usuario()
     {
-        return $this->belongsTo(Usuario::class, 'profesor_id');
+        return $this->belongsTo(Usuario::class, 'usuario_id');
     }
 
     // Relación: Un curso puede tener muchos profesores.
@@ -24,5 +29,10 @@ class ProfesoresCurso extends Model
     public function isJefeCurso()
     {
         return $this->curso->jefe_curso_id === $this->profesor_id;
+    }
+
+    public function profesor()
+    {
+        return $this->belongsTo(Usuario::class, 'usuario_id');
     }
 }

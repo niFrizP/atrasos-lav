@@ -55,14 +55,13 @@
                                 <option value="">{{ __('Selecciona un curso (opcional)') }}</option>
                                 @foreach ($cursos as $curso)
                                     <option value="{{ $curso->id }}"
-                                        {{ $profesor->curso && $profesor->curso->id == $curso->id ? 'selected' : '' }}>
+                                        {{ $profesor->cursoActual && $profesor->cursoActual->id == $curso->id ? 'selected' : '' }}>
                                         {{ $curso->codigo }} - {{ $curso->grado->nombre }}
                                     </option>
                                 @endforeach
                             </select>
                             <x-input-error :messages="$errors->get('curso_id')" class="mt-2" />
                         </div>
-
                         <!-- Botones -->
                         <div class="flex justify-end mt-6">
                             <a href="{{ route('profesores.index') }}"
