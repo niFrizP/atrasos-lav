@@ -15,8 +15,8 @@ class ProfesorController extends Controller
      */
     public function index()
     {
-        // Obtener profesores con rol_id 3 (Profesor) y que están activos
-        $profesores = Usuario::where('rol_id', 3)
+        // Obtener profesores con rol_id 4 (Profesor) y que están activos
+        $profesores = Usuario::where('rol_id', 4)
             ->where('activo', 1)
             ->with('cursoActual.grado')
             ->orderBy('created_at', 'desc')
@@ -93,7 +93,7 @@ class ProfesorController extends Controller
             'correo' => $request->correo,
             'telefono' => $request->telefono,
             'password' => Hash::make($request->password),
-            'rol_id' => 3, // Profesor
+            'rol_id' => 4, // Profesor
         ]);
 
         // Si se selecciona un curso, asignar al profesor como jefe de curso

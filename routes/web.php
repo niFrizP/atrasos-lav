@@ -61,6 +61,20 @@ Route::match(['put', 'patch'], 'estudiantes/{estudiante}', [EstudianteController
 Route::patch('estudiantes/{estudiante}/disable', [EstudianteController::class, 'disable'])->name('estudiantes.disable'); // Deshabilitar estudiante
 
 // Busquedas
+// Búsqueda global
+Route::get('/buscar', [BusquedaController::class, 'buscar'])->name('buscar.general');
+
+// Resultados generales
+Route::get('/buscar/resultados', [BusquedaController::class, 'mostrarResultados'])->name('buscar.general.resultados');
+
+// Búsqueda específica
 Route::get('/buscar-estudiante', [BusquedaController::class, 'buscarEstudiante'])->name('buscar.estudiante');
+Route::get('/buscar-profesor', [BusquedaController::class, 'buscarProfesor'])->name('buscar.profesor');
 Route::get('/buscar-atraso', [BusquedaController::class, 'buscarAtraso'])->name('buscar.atraso');
+Route::get('/buscar-curso', [BusquedaController::class, 'buscarCurso'])->name('buscar.curso');
+
+
+
+
+// Rutas de autenticación
 require __DIR__ . '/auth.php';

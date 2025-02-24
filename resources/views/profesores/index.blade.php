@@ -12,14 +12,15 @@
                     <h1 class="text-2xl font-bold mb-4">{{ __('Listado de Profesores') }}</h1>
 
                     <!-- Buscador -->
-                    <form method="GET" action="{{ route('profesores.index') }}" class="mb-4">
-                        <input type="text" name="search" placeholder="Buscar por nombre, curso o RUT"
+                    <form method="GET" action="{{ route('buscar.profesor') }}">
+                        <input type="text" name="nombre" placeholder="Buscar Profesor"
                             class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:text-white">
                         <button type="submit"
                             class="mt-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg">
                             Buscar
                         </button>
                     </form>
+                    <!-- Fin Buscador -->
 
                     <div class="overflow-x-auto">
                         <table class="w-full border border-gray-300 dark:border-gray-700">
