@@ -1,3 +1,4 @@
+@vite(['resources/js/app.js'])
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
@@ -11,7 +12,7 @@
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <h1 class="text-2xl font-bold mb-4">{{ __('Nuevo Atraso') }}</h1>
 
-                    <!-- Asegúrate de incluir el atributo enctype para subir archivos -->
+                    <!-- Formulario para registrar el atraso -->
                     <form action="{{ route('atrasos.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
 
@@ -23,7 +24,8 @@
                                 <option value="">{{ __('Selecciona un estudiante') }}</option>
                                 @foreach ($estudiantes as $estudiante)
                                     <option value="{{ $estudiante->id }}">
-                                        {{ $estudiante->nomape }} - {{ $estudiante->curso->grado->nombre }}
+                                        {{ $estudiante->nomape }} - {{ $estudiante->curso->codigo }}
+                                        ({{ $estudiante->curso->grado->nombre }})
                                     </option>
                                 @endforeach
                             </select>
@@ -56,6 +58,11 @@
                             <x-input-error :messages="$errors->get('evidencia')" class="mt-2" />
                         </div>
 
+                        <div class="text-sm text-gray-500 mt-1">
+                            <p>{{ __('Tamaño máximo: 2 MB') }}</p>
+                            <p>{{ __('Formatos permitidos: jpeg, png, jpg') }}</p>
+                        </div>
+
                         <!-- Botones -->
                         <div class="flex justify-end mt-6">
                             <a href="{{ route('atrasos.index') }}"
@@ -73,13 +80,38 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/js/select2.min.js"></script>
+    <!-- Incluir jQuery desde CDN -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <!-- Incluir Select2 CSS y JS desde CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <style>
+        /* Ajustar estilos de select2 para que coincidan con Tailwind */
+        .select2-container .select2-selection--single {
+            @apply bg-white dark:bg-gray-800 dark:text-gray-300 border-gray-300 dark:border-gray-600 focus:ring focus:ring-indigo-200 dark:focus:ring-indigo-500 rounded-md shadow-sm p-2;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            @apply text-gray-900 dark:text-gray-100;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            @apply text-gray-500;
+        }
+    </style>
+
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        $(document).ready(function() {
             $('#estudiante_id').select2({
                 placeholder: 'Selecciona un estudiante',
                 allowClear: true,
-            });
+                width: '100%'
+            }).next().find('.select2-selection').addClass(
+                'bg-white dark:bg-gray-800 dark:text-gray-300 border-gray-300 dark:border-gray-600 focus:ring focus:ring-indigo-200 dark:focus:ring-indigo-500 rounded-md shadow-sm'
+            );
         });
     </script>
+
 </x-app-layout>

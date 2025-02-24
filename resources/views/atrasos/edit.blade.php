@@ -74,7 +74,7 @@
 
                             <div class="text-sm text-gray-500 mt-1">
                                 <p>{{ __('Tamaño máximo: 2 MB') }}</p>
-                                <p>{{ __('Formatos permitidos: jpeg, png, jpg, gif, svg') }}</p>
+                                <p>{{ __('Formatos permitidos: jpeg, png, jpg') }}</p>
                             </div>
 
                             @error('evidencia')

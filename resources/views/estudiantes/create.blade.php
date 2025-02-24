@@ -51,6 +51,15 @@
                                 class="block mt-1 w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:text-white">
                                 <option value="">{{ __('Selecciona un curso') }}</option>
 
+                                <!-- Sin Curso -->
+                                <optgroup label="Sin Asignar" style="font-weight: bold;">
+                                    @foreach ($cursos as $curso)
+                                        @if ($curso->grado_id == 5)
+                                            <option value="{{ $curso->id }}">{{ $curso->codigo }}</option>
+                                        @endif
+                                    @endforeach
+                                </optgroup>
+
                                 <!-- Pre-Básica -->
                                 <optgroup label="Pre-Básica" style="font-weight: bold;">
                                     @foreach ($cursos as $curso)
