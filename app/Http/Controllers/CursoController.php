@@ -13,16 +13,24 @@ class CursoController extends Controller
      */
     public function index()
     {
-        $grados = Grado::with('cursos')->get();
+        // Obtener grados con cursos que tienen al menos un estudiante
+        $grados = Grado::whereHas('cursos.estudiantes') // Filtra los grados con cursos que tengan estudiantes
+            ->with('cursos') // Cargar la relación de cursos
+            ->get();
+
         return view('cursos.index', compact('grados'));
     }
+
 
     /**
      * Muestra los cursos de un grado específico.
      */
     public function show($id)
     {
-        $grado = Grado::with('cursos')->findOrFail($id);
+        $grado = Grado::with(['cursos' => function ($query) {
+            $query->whereHas('estudiantes'); // Solo los cursos que tienen estudiantes
+        }])->findOrFail($id);
+
         return view('cursos.show', compact('grado'));
     }
 
