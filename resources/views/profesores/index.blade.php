@@ -12,8 +12,9 @@
                     <h1 class="text-2xl font-bold mb-4">{{ __('Listado de Profesores') }}</h1>
 
                     <!-- Buscador -->
-                    <form method="GET" action="{{ route('buscar.profesor') }}">
-                        <input type="text" name="nombre" placeholder="Buscar Profesor"
+                    <form method="GET" action="{{ route('profesores.index') }}">
+                        <input type="text" name="nombre" value="{{ request('nombre') }}"
+                            placeholder="Buscar Profesor"
                             class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:text-white">
                         <button type="submit"
                             class="mt-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg">
@@ -21,6 +22,7 @@
                         </button>
                     </form>
                     <!-- Fin Buscador -->
+
 
                     <div class="overflow-x-auto">
                         <table class="w-full border border-gray-300 dark:border-gray-700">
@@ -34,7 +36,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($profesores as $profesor)
+                                @forelse ($profesores as $profesor)
                                     <tr class="border border-gray-300 dark:border-gray-700">
                                         <td class="p-2">{{ $profesor->nomape }}</td>
                                         <td class="p-2">
@@ -66,7 +68,13 @@
                                             </form>
                                         </td>
                                     </tr>
-                                @endforeach
+                                @empty
+                                    <tr>
+                                        <td colspan="3" class="text-center p-4">
+                                            {{ __('No se encontraron profesores que coincidan con la búsqueda.') }}
+                                        </td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>

@@ -13,13 +13,14 @@
 
                     <!-- Buscador -->
                     <form method="GET" action="{{ route('estudiantes.index') }}" class="mb-4">
-                        <input type="text" name="search" placeholder="Buscar por nombre, curso o RUT"
+                        <input type="text" name="search" placeholder="Buscar por Nombre o RUT"
                             class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:text-white">
                         <button type="submit"
                             class="mt-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg">
                             Buscar
                         </button>
                     </form>
+                    <!-- Fin Buscador -->
 
                     <!-- Tabla de estudiantes -->
                     <div class="overflow-x-auto">
@@ -36,7 +37,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($estudiantes as $estudiante)
+                                @forelse ($estudiantes as $estudiante)
                                     <tr class="border border-gray-300 dark:border-gray-700">
                                         <td class="p-2">{{ $estudiante->nomape }}</td>
                                         <td class="p-2">{{ $estudiante->rut_formatted }}</td>
@@ -64,12 +65,19 @@
                                             </form>
                                         </td>
                                     </tr>
-                                @endforeach
+                                @empty
+                                    <tr>
+                                        <td colspan="3" class="text-center p-4">
+                                            {{ __('No se encontraron estudiantes que coincidan con la búsqueda.') }}
+                                        </td>
+                                    </tr>
+                                @endforelse
                             </tbody>
-                            @if ($estudiantes->isEmpty())
-                                <p class="text-red-500">No hay estudiantes registrados.</p>
-                            @endif
                         </table>
+                        <!-- Mostrar enlaces de paginación -->
+                        <div class="mt-4">
+                            {{ $estudiantes->links() }}
+                        </div>
                     </div>
 
                     <!-- Botón para agregar estudiante -->

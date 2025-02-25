@@ -22,7 +22,7 @@ class AtrasoController extends Controller
     public function index(Request $request)
     {
         // Búsqueda por nombre, curso o RUT
-        $query = Atraso::with('estudiante.curso')->orderBy('fecha_atraso', 'desc');
+        $query = Atraso::with('estudiante.curso')->orderBy('fecha_creacion', 'desc');
 
         if ($request->has('search')) {
             $search = $request->input('search');
@@ -35,7 +35,7 @@ class AtrasoController extends Controller
             });
         }
 
-        $atrasos = $query->paginate(10);
+        $atrasos = $query->paginate(5);
 
         return view('atrasos.index', compact('atrasos'));
     }
@@ -48,6 +48,26 @@ class AtrasoController extends Controller
         $estudiantes = Estudiante::with('curso')->get();
         return view('atrasos.form', compact('estudiantes'));
     }
+
+    /**
+     * Buscar estudiantes por nombre, curso o RUT.
+     */
+    public function buscar(Request $request)
+    {
+        // Obtener el término de búsqueda
+        $search = $request->input('search');
+
+        // Realizar la búsqueda en la base de datos
+        $estudiantes = Estudiante::where('nomape', 'like', '%' . $search . '%')
+            ->orWhere('fecha_atraso', 'like', '%' . $search . '%')
+            ->with('curso.grado')
+            ->limit(10) // Puedes limitar el número de resultados
+            ->get();
+
+        // Retornar los resultados como JSON
+        return response()->json($estudiantes);
+    }
+
 
     /**
      * Guardar un nuevo atraso en la base de datos.
@@ -68,7 +88,7 @@ class AtrasoController extends Controller
         $curso_id = Estudiante::find($estudiante_id)->curso_id;
         // Obtener el año actual
         $anio_actual = Carbon::now()->year;
-        
+
         // Verificar si se sube una evidencia y almacenarla en 'public/evidencias'
         $evidencia = $request->file('evidencia')
             ? $request->file('evidencia')->storeAs('public/evidencias', $request->file('evidencia')->getClientOriginalName()) // Usamos storeAs para definir la carpeta y el nombre del archivo

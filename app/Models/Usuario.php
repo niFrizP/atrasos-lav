@@ -109,6 +109,27 @@ class Usuario extends Authenticatable
         return $this->role->nombre === 'Admin';
     }
 
+    public function getRutFormattedAttribute()
+    {
+        // Convertir a string y dejar solo dígitos o K
+        $rut = preg_replace('/[^0-9kK]/', '', (string) $this->rut);
+        $rut = strtoupper($rut);
+
+        // Manejar 8 dígitos + dígito verificador (9 caracteres)
+        if (strlen($rut) === 9) {
+            // Ejemplo: 12.345.678-9
+            return preg_replace('/^(\d{2})(\d{3})(\d{3})([\dkK])$/', '$1.$2.$3-$4', $rut);
+        }
+        // Manejar 7 dígitos + dígito verificador (8 caracteres)
+        elseif (strlen($rut) === 8) {
+            // Ejemplo: 1.234.567-K
+            return preg_replace('/^(\d{1})(\d{3})(\d{3})([\dkK])$/', '$1.$2.$3-$4', $rut);
+        }
+
+        // Fallback si no coincide con 8 o 9 caracteres
+        return $rut;
+    }
+
     public function generateQR()
     {
         $data = json_encode([

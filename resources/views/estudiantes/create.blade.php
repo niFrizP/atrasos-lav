@@ -26,7 +26,7 @@
                         <div class="mb-4">
                             <x-input-label for="rut" :value="__('RUT')" />
                             <x-text-input id="rut" class="block mt-1 w-full" type="text" name="rut"
-                                maxlength="12" required oninput="formatRut(this)" />
+                                maxlength="12" placeholder="Ej: 9.999.999-9" required oninput="formatRut(this)" />
                             <x-input-error :messages="$errors->get('rut')" class="mt-2" />
                         </div>
 
@@ -40,7 +40,8 @@
                         <!-- Teléfono -->
                         <div class="mb-4">
                             <x-input-label for="telefono" :value="__('Teléfono')" />
-                            <x-text-input id="telefono" class="block mt-1 w-full" type="text" name="telefono" />
+                            <x-text-input id="telefono" class="block mt-1 w-full" type="text" name="telefono"
+                                maxlenght="9" />
                             <x-input-error :messages="$errors->get('telefono')" class="mt-2" />
                         </div>
 
@@ -74,7 +75,8 @@
                                 <optgroup label="Básica" style="font-weight: bold;">
                                     @foreach ($cursos as $curso)
                                         @if ($curso->grado_id == 2)
-                                            <option value="{{ $curso->id }}">{{ $curso->codigo }}</option>
+                                            <option value="{{ $curso->id }}">{{ $curso->codigo }} -
+                                                {{ $curso->grado->nombre }}</option>
                                         @endif
                                     @endforeach
                                 </optgroup>
@@ -83,7 +85,8 @@
                                 <optgroup label="Media" style="font-weight: bold;">
                                     @foreach ($cursos as $curso)
                                         @if ($curso->grado_id == 3)
-                                            <option value="{{ $curso->id }}">{{ $curso->codigo }}</option>
+                                            <option value="{{ $curso->id }}">{{ $curso->codigo }} -
+                                                {{ $curso->grado->nombre }}</option>
                                         @endif
                                     @endforeach
                                 </optgroup>
@@ -112,22 +115,22 @@
                             </x-primary-button>
                         </div>
                     </form>
+                    <script>
+                        function formatRut(input) {
+                            let value = input.value.toUpperCase().replace(/[^0-9K]/g, ''); // Limpiamos el valor
+                            // Verificamos la longitud
+                            if (value.length === 9) {
+                                value = value.replace(/^(\d{2})(\d{3})(\d{3})([\dkK])$/, '$1.$2.$3-$4');
+                            } else if (value.length === 8) {
+                                value = value.replace(/^(\d{1})(\d{3})(\d{3})([\dkK])$/, '$1.$2.$3-$4');
+                            }
 
+                            input.value = value;
+                        }
+                    </script>
                 </div>
             </div>
         </div>
     </div>
-    <script>
-        function formatRut(input) {
-            let value = input.value.toUpperCase().replace(/[^0-9K]/g, ''); // Limpiamos el valor
-            // Verificamos la longitud
-            if (value.length === 9) {
-                value = value.replace(/^(\d{2})(\d{3})(\d{3})([\dkK])$/, '$1.$2.$3-$4');
-            } else if (value.length === 8) {
-                value = value.replace(/^(\d{1})(\d{3})(\d{3})([\dkK])$/, '$1.$2.$3-$4');
-            }
 
-            input.value = value;
-        }
-    </script>
 </x-app-layout>

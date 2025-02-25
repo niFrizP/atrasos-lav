@@ -11,7 +11,7 @@
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     @if (isset($estudiantes))
                         @if ($estudiantes->isEmpty())
-                            <p class="text-red-500">No se encontraron estudiantes con esos criterios.</p>
+                            <p class="text-red-500">No se encontraron resultados con esos criterios.</p>
                         @else
                             <table class="w-full">
                                 <thead>

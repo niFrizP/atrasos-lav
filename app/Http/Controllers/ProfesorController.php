@@ -13,15 +13,26 @@ class ProfesorController extends Controller
     /**
      * Lista todos los profesores.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Obtener profesores con rol_id 4 (Profesor) y que están activos
-        $profesores = Usuario::where('rol_id', 4)
-            ->where('activo', 1)
-            ->with('cursoActual.grado')
-            ->orderBy('created_at', 'desc')
-            ->get();
+        // Obtener los datos de búsqueda
+        $nombre = $request->input('nombre');
 
+        // Crear la query base
+        $query = Usuario::where('rol_id', 4)  // Filtrar solo a profesores
+            ->where('activo', 1)  // Profesores activos
+            ->with('cursoActual.grado');  // Cargar curso y grado actual
+
+        // Si el usuario ingresa un nombre, agregar el filtro
+        if (!empty($nombre)) {
+            $query->where('nomape', 'like', '%' . $nombre . '%')
+                ->orWhere('rut', 'like', '%' . $nombre . '%');
+        }
+
+        // Ejecutar la query
+        $profesores = $query->orderBy('created_at', 'desc')->get();
+
+        // Retornar la vista con los resultados
         return view('profesores.index', compact('profesores'));
     }
 
@@ -84,7 +95,16 @@ class ProfesorController extends Controller
             'telefono' => 'nullable|string|max:9',
             'password' => 'required|string|min:8',
             'curso_id' => 'nullable|exists:cursos,id', // Validar el curso seleccionado
+            'extranjero' => 'nullable|boolean', // Validar si es extranjero
         ]);
+
+        // Si el profesor es extranjero, asignar un rut extranjero
+        if ($request->has('extranjero') && $request->extranjero) {
+            // Asignar un valor autoincrementable a rut_extranjero
+            $lastRutExtranjero = Usuario::whereNotNull('rut_extranjero')->max('rut_extranjero');
+            $data['rut_extranjero'] = $lastRutExtranjero + 1; // Asignamos el siguiente número
+            $data['rut'] = null; // Dejamos el RUT en null
+        }
 
         // Crear el usuario (Profesor)
         $profesor = Usuario::create([
@@ -94,6 +114,7 @@ class ProfesorController extends Controller
             'telefono' => $request->telefono,
             'password' => Hash::make($request->password),
             'rol_id' => 4, // Profesor
+            'extranjero' => $request->extranjero ?? false,
         ]);
 
         // Si se selecciona un curso, asignar al profesor como jefe de curso
@@ -127,11 +148,21 @@ class ProfesorController extends Controller
         // Validar los datos
         $request->validate([
             'nomape' => 'required|string|max:350',
-            'rut' => 'required|string|max:15|unique:usuarios,rut,' . $profesor->id,
+            'rut' => 'nullable|string|max:15|unique:usuarios,rut,' . $profesor->id,
             'correo' => 'required|email|max:255|unique:usuarios,correo,' . $profesor->id,
             'telefono' => 'nullable|string|max:9',
             'curso_id' => 'nullable|exists:cursos,id',
+            'extranjero' => 'nullable|boolean',
+
         ]);
+
+        // Si el profesor es extranjero, asignar un rut extranjero
+        if ($request->has('extranjero') && $request->extranjero) {
+            // Asignar un valor autoincrementable a rut_extranjero
+            $lastRutExtranjero = Usuario::whereNotNull('rut_extranjero')->max('rut_extranjero');
+            $data['rut_extranjero'] = $lastRutExtranjero + 1; // Asignamos el siguiente número
+            $data['rut'] = null; // Dejamos el RUT en null
+        }
 
         // Actualizar los datos del profesor
         $profesor->update([
@@ -139,6 +170,7 @@ class ProfesorController extends Controller
             'rut' => $request->rut,
             'correo' => $request->correo,
             'telefono' => $request->telefono,
+            'extranjero' => $request->extranjero ?? false,
         ]);
 
         // Limpiar el profesor_jefe_id de su curso anterior si tenía asignado

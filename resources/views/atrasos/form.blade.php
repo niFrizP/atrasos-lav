@@ -20,15 +20,7 @@
                         <div class="mb-4">
                             <x-input-label for="estudiante_id" :value="__('Estudiante')" />
                             <select id="estudiante_id" name="estudiante_id"
-                                class="form-select bg-white dark:bg-gray-800 dark:text-gray-300 border-gray-300 dark:border-gray-600 focus:ring focus:ring-indigo-200 dark:focus:ring-indigo-500 rounded-md shadow-sm">
-                                <option value="">{{ __('Selecciona un estudiante') }}</option>
-                                @foreach ($estudiantes as $estudiante)
-                                    <option value="{{ $estudiante->id }}">
-                                        {{ $estudiante->nomape }} - {{ $estudiante->curso->codigo }}
-                                        ({{ $estudiante->curso->grado->nombre }})
-                                    </option>
-                                @endforeach
-                            </select>
+                                class="w-full h-12 bg-white dark:bg-gray-800 dark:text-gray-300 border-gray-300 dark:border-gray-600 focus:ring focus:ring-indigo-200 dark:focus:ring-indigo-500 rounded-md shadow-sm"></select>
                             <x-input-error :messages="$errors->get('estudiante_id')" class="mt-2" />
                         </div>
 
@@ -46,7 +38,7 @@
                             <x-input-label for="razon" :value="__('Razón')" />
                             <textarea id="razon" name="razon"
                                 class="form-select block mt-1 w-full bg-white dark:bg-gray-800 dark:text-gray-300 border-gray-300 dark:border-gray-600 focus:ring focus:ring-indigo-200 dark:focus:ring-indigo-500 rounded-md shadow-sm"
-                                required placeholder="Motivo del atraso"></textarea>
+                                placeholder="Motivo del atraso"></textarea>
                             <x-input-error :messages="$errors->get('razon')" class="mt-2" />
                         </div>
 
@@ -105,12 +97,42 @@
     <script>
         $(document).ready(function() {
             $('#estudiante_id').select2({
-                placeholder: 'Selecciona un estudiante',
-                allowClear: true,
-                width: '100%'
-            }).next().find('.select2-selection').addClass(
-                'bg-white dark:bg-gray-800 dark:text-gray-300 border-gray-300 dark:border-gray-600 focus:ring focus:ring-indigo-200 dark:focus:ring-indigo-500 rounded-md shadow-sm'
-            );
+                placeholder: 'Busque un estudiante por nombre o apellido',
+                ajax: {
+                    url: '{{ route('buscar.estudiantes') }}', // Ruta en Laravel
+                    dataType: 'json',
+                    delay: 250,
+                    data: function(params) {
+                        return {
+                            q: params.term // Término de búsqueda
+                        };
+                    },
+                    processResults: function(data) {
+                        return {
+                            results: data
+                        };
+                    },
+                    cache: true
+                },
+                minimumInputLength: 1,
+                language: {
+                    inputTooShort: function() {
+                        return 'Ingresa al menos un carácter';
+                    },
+                    errorLoading: function() {
+                        return 'No se pudieron cargar los resultados';
+                    },
+                    loadingMore: function() {
+                        return 'Cargando más resultados...';
+                    },
+                    noResults: function() {
+                        return 'No se encontraron resultados';
+                    },
+                    searching: function() {
+                        return 'Buscando...';
+                    }
+                }
+            });
         });
     </script>
 

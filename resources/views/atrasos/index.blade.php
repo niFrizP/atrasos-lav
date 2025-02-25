@@ -13,7 +13,7 @@
 
                     <!-- Buscador -->
                     <form method="GET" action="{{ route('atrasos.index') }}" class="mb-4">
-                        <input type="text" name="search" placeholder="Buscar por nombre, curso o RUT"
+                        <input type="text" name="search" placeholder="Buscar por Nombre o Curso"
                             class="w-full p-2 border rounded-md dark:bg-gray-700 dark:text-white">
                         <button type="submit"
                             class="mt-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg">
@@ -35,7 +35,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($atrasos as $atraso)
+                                @forelse ($atrasos as $atraso)
                                     <tr class="border border-gray-300 dark:border-gray-700">
                                         <td class="p-2">{{ $atraso->estudiante->nomape }}</td>
                                         <td class="p-2">{{ $atraso->estudiante->curso->codigo ?? 'Sin curso' }}</td>
@@ -60,14 +60,20 @@
                                             </form>
                                         </td>
                                     </tr>
-                                @endforeach
+                                @empty
+                                    <tr>
+                                        <td colspan="3" class="text-center p-4">
+                                            {{ __('No se encontraron atrasos que coincidan con la búsqueda.') }}
+                                        </td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
+                        <!-- Mostrar enlaces de paginación -->
+                        <div class="mt-4">
+                            {{ $atrasos->links() }}
+                        </div>
                     </div>
-
-                    @if ($atrasos->isEmpty())
-                        <p class="text-red-500 mt-4">No hay atrasos registrados.</p>
-                    @endif
 
                     <!-- Botón para agregar un nuevo atraso -->
                     <div class="mt-6 flex justify-end">

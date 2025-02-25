@@ -9,24 +9,58 @@ use Illuminate\Support\Facades\DB;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Eloquent\Collection;
 
 class EstudianteController extends Controller
 {
     /**
      * Mostrar listado de estudiantes.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Obtener estudiantes con el conteo de atrasos
+        // Obtener el término de búsqueda desde el formulario
+        $search = $request->input('search');
+
+        // Obtener estudiantes con el conteo de atrasos, aplicando el filtro de búsqueda
         $estudiantes = Estudiante::with('curso') // Cargar la relación con el curso
             ->withCount('atrasos') // Cargar el conteo de atrasos
-            ->whereNotNull('estado_id')
+            ->whereNotNull('estado_id') // Solo estudiantes activos
+            ->when($search, function ($query, $search) {
+                return $query->where(function ($query) use ($search) {
+                    $query->where('nomape', 'like', '%' . $search . '%') // Buscar por nombre
+                        ->orWhere('rut', 'like', '%' . $search . '%'); // Buscar por RUT
+                });
+            })
             ->orderBy('created_at', 'desc')
-            ->get();
-
+            // Paginar los resultados
+            ->paginate(5);
         // Pasar los estudiantes a la vista
         return view('estudiantes.index', compact('estudiantes'));
     }
+
+    /**
+     * Buscar estudiantes por nombre o RUT.
+     */
+    public function buscar(Request $request)
+    {
+        // Obtener el término de búsqueda desde el parámetro 'q' que envía Select2
+        $search = $request->input('q'); // 'q' es el término de búsqueda que envía Select2
+
+        // Realizar la búsqueda en la base de datos
+        $estudiantes = Estudiante::where('nomape', 'like', '%' . $search . '%')
+            ->with('curso.grado') // Cargar las relaciones necesarias
+            ->limit(10) // Limitar el número de resultados para optimizar
+            ->get();
+
+        // Retornar los resultados formateados para Select2
+        return response()->json($estudiantes->map(function ($estudiante) {
+            return [
+                'id' => $estudiante->id,
+                'text' => $estudiante->nomape . ' - ' . $estudiante->curso->codigo . ' (' . $estudiante->curso->grado->nombre . ')'
+            ];
+        }));
+    }
+
 
 
     /**

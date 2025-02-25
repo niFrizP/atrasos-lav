@@ -23,11 +23,22 @@
                             <x-input-error :messages="$errors->get('nomape')" class="mt-2" />
                         </div>
 
+                        <!-- Extranjero -->
+                        <div class="mb-4">
+                            <x-input-label for="extranjero" :value="__('¿Es extranjero?')" />
+                            <input type="checkbox" id="extranjero" name="extranjero"
+                                :checked="old('extranjero', $profesor - > rut_extranjero ? true : false)"
+                                onclick="toggleRutField()" />
+                            <x-input-error :messages="$errors->get('extranjero')" class="mt-2" />
+                        </div>
+
                         <!-- RUT -->
                         <div class="mb-4">
                             <x-input-label for="rut" :value="__('RUT')" />
                             <x-text-input id="rut" class="block mt-1 w-full" type="text" name="rut"
-                                value="{{ old('rut', $profesor->rut) }}" required />
+                                maxlength="12" value="{{ old('rut', $profesor->rut) }}" required
+                                oninput="formatRut(this)"
+                                {{ old('extranjero', $profesor->rut_extranjero) ? 'disabled' : '' }} />
                             <x-input-error :messages="$errors->get('rut')" class="mt-2" />
                         </div>
 
@@ -43,7 +54,7 @@
                         <div class="mb-4">
                             <x-input-label for="telefono" :value="__('Teléfono')" />
                             <x-text-input id="telefono" class="block mt-1 w-full" type="tel" name="telefono"
-                                value="{{ old('telefono', $profesor->telefono) }}" />
+                                maxlength="9" value="{{ old('telefono', $profesor->telefono) }}" />
                             <x-input-error :messages="$errors->get('telefono')" class="mt-2" />
                         </div>
 
@@ -73,7 +84,28 @@
                             </x-primary-button>
                         </div>
                     </form>
+                    <script>
+                        function formatRut(input) {
+                            let value = input.value.toUpperCase().replace(/[^0-9K]/g, ''); // Limpiamos el valor
+                            // Verificamos la longitud
+                            if (value.length === 9) {
+                                value = value.replace(/^(\d{2})(\d{3})(\d{3})([\dkK])$/, '$1.$2.$3-$4');
+                            } else if (value.length === 8) {
+                                value = value.replace(/^(\d{1})(\d{3})(\d{3})([\dkK])$/, '$1.$2.$3-$4');
+                            }
 
+                            input.value = value;
+                        }
+
+                        function toggleRutField() {
+                            const isChecked = document.getElementById('extranjero').checked;
+                            document.getElementById('rut').disabled = isChecked;
+                        }
+                        // Llamar a la función al cargar la página para que se aplique el estado inicial
+                        window.onload = function() {
+                            toggleRutField();
+                        }
+                    </script>
                 </div>
             </div>
         </div>

@@ -47,9 +47,13 @@ Route::put('/profesores/{id}', [ProfesorController::class, 'update'])->name('pro
 Route::delete('/profesores/{id}', [ProfesorController::class, 'destroy'])->name('profesores.destroy');
 Route::get('/profesores/{id}', [ProfesorController::class, 'show'])->name('profesores.show');
 Route::post('/profesores/asignar', [ProfesorController::class, 'asignar'])->name('profesores.asignar');
+Route::resource('profesores', ProfesorController::class);
+
 
 // Atrasos
 Route::resource('/atrasos', AtrasoController::class)->middleware('auth');
+Route::get('/buscar-estudiantes', [EstudianteController::class, 'buscar'])->name('buscar.estudiantes');
+
 
 // Estudiantes
 Route::get('estudiantes', [EstudianteController::class, 'index'])->name('estudiantes.index'); // Listado de estudiantes
@@ -72,8 +76,6 @@ Route::get('/buscar-estudiante', [BusquedaController::class, 'buscarEstudiante']
 Route::get('/buscar-profesor', [BusquedaController::class, 'buscarProfesor'])->name('buscar.profesor');
 Route::get('/buscar-atraso', [BusquedaController::class, 'buscarAtraso'])->name('buscar.atraso');
 Route::get('/buscar-curso', [BusquedaController::class, 'buscarCurso'])->name('buscar.curso');
-
-
 
 
 // Rutas de autenticación
