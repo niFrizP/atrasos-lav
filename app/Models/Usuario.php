@@ -23,7 +23,7 @@ class Usuario extends Authenticatable
     }
 
     // Especifica los campos que se pueden asignar en masa.
-    protected $fillable = ['nomape', 'rut', 'telefono', 'correo', 'password', 'activo', 'rol_id'];
+    protected $fillable = ['nomape', 'rut', 'rut_extranjero', 'extranjero', 'telefono', 'correo', 'password', 'activo', 'rol_id'];
 
     // Especifica el campo que se usará como nombre de usuario.
     public function getAuthIdentifierName()

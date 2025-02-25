@@ -7,6 +7,8 @@ use App\Models\ProfesoresCurso;
 use App\Models\Curso;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Collection;
 
 class ProfesorController extends Controller
 {
@@ -15,27 +17,21 @@ class ProfesorController extends Controller
      */
     public function index(Request $request)
     {
-        // Obtener los datos de búsqueda
         $nombre = $request->input('nombre');
 
-        // Crear la query base
-        $query = Usuario::where('rol_id', 4)  // Filtrar solo a profesores
+        $profesores = Usuario::where('rol_id', 4)  // Solo profesores
             ->where('activo', 1)  // Profesores activos
-            ->with('cursoActual.grado');  // Cargar curso y grado actual
-
-        // Si el usuario ingresa un nombre, agregar el filtro
-        if (!empty($nombre)) {
-            $query->where('nomape', 'like', '%' . $nombre . '%')
-                ->orWhere('rut', 'like', '%' . $nombre . '%');
-        }
-
-        // Ejecutar la query
-        $profesores = $query->orderBy('created_at', 'desc')->get();
-
-        // Retornar la vista con los resultados
+            ->when($nombre, function ($query, $nombre) {
+                return $query->where(function ($query) use ($nombre) {
+                    $query->where('nomape', 'like', '%' . $nombre . '%')
+                        ->orWhere('rut', 'like', '%' . $nombre . '%');
+                });
+            })
+            ->with('cursoActual.grado')  // Relación curso y grado
+            ->orderBy('nomape', 'asc')
+            ->paginate(5);
         return view('profesores.index', compact('profesores'));
     }
-
 
     /**
      * Muestra los cursos donde ha sido profesor jefe.
@@ -56,16 +52,21 @@ class ProfesorController extends Controller
             'usuario_id' => 'required|exists:usuarios,id',
         ]);
 
-        // Desactivar profesor anterior
-        ProfesoresCurso::where('curso_id', $request->curso_id)->update(['activo' => false]);
+        DB::transaction(function () use ($request) {
+            // Desactivar profesor anterior
+            ProfesoresCurso::where('curso_id', $request->curso_id)->update(['activo' => false]);
 
-        // Asignar nuevo profesor jefe
-        ProfesoresCurso::create([
-            'usuario_id' => $request->usuario_id,
-            'curso_id' => $request->curso_id,
-            'anio' => date('Y'),
-            'activo' => true,
-        ]);
+            // Asignar nuevo profesor jefe
+            ProfesoresCurso::create([
+                'usuario_id' => $request->usuario_id,
+                'curso_id' => $request->curso_id,
+                'anio' => date('Y'),
+                'activo' => true,
+            ]);
+
+            // Actualizar profesor jefe en la tabla cursos
+            Curso::where('id', $request->curso_id)->update(['profesor_jefe_id' => $request->usuario_id]);
+        });
 
         return redirect()->route('cursos.index')->with('success', 'Profesor jefe actualizado correctamente.');
     }
@@ -75,10 +76,7 @@ class ProfesorController extends Controller
      */
     public function create()
     {
-        // Obtener los cursos que no tienen profesor jefe asignado aún
         $cursos = Curso::whereNull('profesor_jefe_id')->get();
-
-        // Pasamos los cursos a la vista
         return view('profesores.create', compact('cursos'));
     }
 
@@ -87,128 +85,133 @@ class ProfesorController extends Controller
      */
     public function store(Request $request)
     {
-        // Validación de datos
-        $request->validate([
-            'nomape' => 'required|string|max:350',
-            'rut' => 'required|string|max:15|unique:usuarios,rut',
-            'correo' => 'required|email|max:255|unique:usuarios,correo',
+        $rules = [
+            'nomape'   => 'required|string|max:350',
+            'correo'   => 'required|email|max:255|unique:usuarios,correo',
             'telefono' => 'nullable|string|max:9',
             'password' => 'required|string|min:8',
-            'curso_id' => 'nullable|exists:cursos,id', // Validar el curso seleccionado
-            'extranjero' => 'nullable|boolean', // Validar si es extranjero
-        ]);
+            'curso_id' => 'nullable|exists:cursos,id',
+            'extranjero' => 'nullable|boolean',
+        ];
 
-        // Si el profesor es extranjero, asignar un rut extranjero
-        if ($request->has('extranjero') && $request->extranjero) {
-            // Asignar un valor autoincrementable a rut_extranjero
-            $lastRutExtranjero = Usuario::whereNotNull('rut_extranjero')->max('rut_extranjero');
-            $data['rut_extranjero'] = $lastRutExtranjero + 1; // Asignamos el siguiente número
-            $data['rut'] = null; // Dejamos el RUT en null
+        // Validación condicional para 'rut'
+        if (!$request->filled('extranjero') || !$request->extranjero) {
+            $rules['rut'] = 'required|string|max:15|unique:usuarios,rut';
+        } else {
+            $rules['rut'] = 'nullable|string|max:15|unique:usuarios,rut';
         }
 
-        // Crear el usuario (Profesor)
-        $profesor = Usuario::create([
-            'nomape' => $request->nomape,
-            'rut' => $request->rut,
-            'correo' => $request->correo,
-            'telefono' => $request->telefono,
-            'password' => Hash::make($request->password),
-            'rol_id' => 4, // Profesor
-            'extranjero' => $request->extranjero ?? false,
-        ]);
+        $data = $request->validate($rules);
 
-        // Si se selecciona un curso, asignar al profesor como jefe de curso
-        if ($request->curso_id) {
-            $curso = Curso::find($request->curso_id);
-            $curso->profesor_jefe_id = $profesor->id;
-            $curso->save();
+        // Manejo del campo extranjero y rut_extranjero
+        if ($request->filled('extranjero') && $request->extranjero) {
+            // Si es extranjero, generamos un rut_extranjero
+            $lastRutExtranjero = Usuario::whereNotNull('rut_extranjero')->max('rut_extranjero') ?? 0;
+            $data['rut_extranjero'] = $lastRutExtranjero + 1;
+            $data['rut'] = null;  // Dejar el rut nulo si es extranjero
         }
 
-        return redirect()->route('profesores.index')->with('success', 'Profesor creado y curso asignado correctamente.');
+        // Cifrar contraseña y asignar rol de profesor
+        $data['password'] = Hash::make($data['password']);
+        $data['rol_id'] = 4;  // Rol Profesor
+        $data['extranjero'] = $data['extranjero'] ?? false;  // Asegurarnos que se almacene un booleano
+
+        DB::transaction(function () use ($data, $request) {
+            $profesor = Usuario::create($data);  // Aquí debe almacenar extranjero y rut_extranjero
+
+            if ($request->curso_id) {
+                // Asignación de profesor jefe a un curso
+                Curso::where('id', $request->curso_id)
+                    ->update(['profesor_jefe_id' => $profesor->id]);
+
+                ProfesoresCurso::create([
+                    'usuario_id' => $profesor->id,
+                    'curso_id' => $request->curso_id,
+                    'anio' => date('Y'),
+                    'activo' => true,
+                ]);
+            }
+        });
+
+        return redirect()->route('profesores.index')
+            ->with('success', 'Profesor creado y curso asignado correctamente.');
     }
 
-
-    // Muestra el formulario de edición de un profesor
+    /**
+     * Muestra el formulario de edición de un profesor.
+     */
     public function edit($id)
     {
-        // Obtener el profesor que queremos editar
         $profesor = Usuario::with('cursoActual')->findOrFail($id);
-        // Obtener todos los cursos
         $cursos = Curso::all();
         return view('profesores.edit', compact('profesor', 'cursos'));
     }
 
-
-    // Actualiza los datos de un profesor
+    /**
+     * Actualiza los datos de un profesor.
+     */
     public function update(Request $request, $id)
     {
-        // Obtener el profesor
         $profesor = Usuario::findOrFail($id);
 
-        // Validar los datos
-        $request->validate([
-            'nomape' => 'required|string|max:350',
-            'rut' => 'nullable|string|max:15|unique:usuarios,rut,' . $profesor->id,
-            'correo' => 'required|email|max:255|unique:usuarios,correo,' . $profesor->id,
+        $rules = [
+            'nomape'   => 'required|string|max:350',
+            'correo'   => 'required|email|max:255|unique:usuarios,correo,' . $profesor->id,
             'telefono' => 'nullable|string|max:9',
             'curso_id' => 'nullable|exists:cursos,id',
             'extranjero' => 'nullable|boolean',
+        ];
 
-        ]);
-
-        // Si el profesor es extranjero, asignar un rut extranjero
-        if ($request->has('extranjero') && $request->extranjero) {
-            // Asignar un valor autoincrementable a rut_extranjero
-            $lastRutExtranjero = Usuario::whereNotNull('rut_extranjero')->max('rut_extranjero');
-            $data['rut_extranjero'] = $lastRutExtranjero + 1; // Asignamos el siguiente número
-            $data['rut'] = null; // Dejamos el RUT en null
+        if (!$request->filled('extranjero') || !$request->extranjero) {
+            $rules['rut'] = 'required|string|max:15|unique:usuarios,rut,' . $profesor->id;
+        } else {
+            $rules['rut'] = 'nullable|string|max:15|unique:usuarios,rut,' . $profesor->id;
         }
 
-        // Actualizar los datos del profesor
-        $profesor->update([
-            'nomape' => $request->nomape,
-            'rut' => $request->rut,
-            'correo' => $request->correo,
-            'telefono' => $request->telefono,
-            'extranjero' => $request->extranjero ?? false,
-        ]);
+        $data = $request->validate($rules);
 
-        // Limpiar el profesor_jefe_id de su curso anterior si tenía asignado
-        if ($profesor->cursoActivo()) {
-            Curso::where('profesor_jefe_id', $profesor->id)->update(['profesor_jefe_id' => null]);
+        // Manejo del campo extranjero y rut_extranjero
+        if ($request->filled('extranjero') && $request->extranjero) {
+            $lastRutExtranjero = Usuario::whereNotNull('rut_extranjero')->max('rut_extranjero') ?? 0;
+            $data['rut_extranjero'] = $lastRutExtranjero + 1;
+            $data['rut'] = null;
+        } else {
+            $data['rut_extranjero'] = null;
         }
 
-        // Asignar el nuevo curso, si se seleccionó
-        if ($request->curso_id) {
-            // Obtener el curso seleccionado
-            $curso = Curso::findOrFail($request->curso_id);
+        DB::transaction(function () use ($data, $profesor, $request) {
+            $profesor->update($data);  // Asegurarnos que los cambios de extranjero y rut_extranjero se guarden
 
-            // Asignar el profesor jefe al curso
-            $curso->profesor_jefe_id = $profesor->id;
-            $curso->save();
+            Curso::where('profesor_jefe_id', $profesor->id)
+                ->update(['profesor_jefe_id' => null]);
 
-            // Crear el registro en la tabla profesores_cursos
-            ProfesoresCurso::create([
-                'curso_id' => $curso->id,
-                'usuario_id' => $profesor->id,
-                'anio' => date('Y'),  // Usamos el año actual
-                'activo' => 1,  // Indicar que este registro está activo
-            ]);
-        }
+            if ($request->curso_id) {
+                // Asignar como jefe de un nuevo curso
+                $curso = Curso::findOrFail($request->curso_id);
+                $curso->profesor_jefe_id = $profesor->id;
+                $curso->save();
 
-        return redirect()->route('profesores.index')->with('success', 'Profesor actualizado correctamente.');
+                ProfesoresCurso::create([
+                    'curso_id'   => $curso->id,
+                    'usuario_id' => $profesor->id,
+                    'anio'       => date('Y'),
+                    'activo'     => true,
+                ]);
+            }
+        });
+
+        return redirect()->route('profesores.index')
+            ->with('success', 'Profesor actualizado correctamente.');
     }
-
-
-    // Desactivar un profesor
+    /**
+     * Desactiva un profesor.
+     */
     public function destroy($id)
     {
         $profesor = Usuario::findOrFail($id);
+        $profesor->update(['activo' => false]);
 
-        // Desactivar el profesor sin eliminarlo
-        $profesor->activo = false;
-        $profesor->save();
-
-        return redirect()->route('profesores.index')->with('success', 'Profesor desactivado correctamente.');
+        return redirect()->route('profesores.index')
+            ->with('success', 'Profesor desactivado correctamente.');
     }
 }

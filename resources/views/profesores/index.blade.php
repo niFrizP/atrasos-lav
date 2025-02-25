@@ -77,6 +77,9 @@
                                 @endforelse
                             </tbody>
                         </table>
+                        <div class="mt-4">
+                            {{ $profesores->links() }}
+                        </div>
                     </div>
 
                     <div class="mt-6 flex justify-end">

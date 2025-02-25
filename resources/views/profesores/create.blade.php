@@ -25,7 +25,8 @@
                         <!-- Extranjero -->
                         <div class="mb-4">
                             <x-input-label for="extranjero" :value="__('¿Es extranjero?')" />
-                            <x-checkbox id="extranjero" name="extranjero" :checked="old('extranjero')"
+                            <input type="hidden" name="extranjero" value="0">
+                            <x-checkbox id="extranjero" name="extranjero" :checked="old('extranjero')" value="1"
                                 onclick="toggleRutField()" />
                             <x-input-error :messages="$errors->get('extranjero')" class="mt-2" />
                         </div>
@@ -35,7 +36,7 @@
                             <x-input-label for="rut" :value="__('RUT')" />
                             <x-text-input id="rut" class="block mt-1 w-full" type="text" name="rut"
                                 maxlength="12" value="{{ old('rut') }}" required oninput="formatRut(this)"
-                                {{ old('extranjero') ? 'disabled' : '' }} />
+                                :required="!old('extranjero')" :disabled="old('extranjero')" />
                             <x-input-error :messages="$errors->get('rut')" class="mt-2" />
                         </div>
 
@@ -66,10 +67,10 @@
 
                         <!-- Selección de Curso (Asignación como Jefe de Curso) -->
                         <div class="mb-4">
-                            <x-input-label for="curso_id" :value="__('Asignar Curso (Jefe de Curso)')" />
+                            <x-input-label for="curso_id" :value="__('Asignar Jefatura de Curso')" />
                             <select id="curso_id" name="curso_id"
                                 class="form-select bg-white dark:bg-gray-800 dark:text-gray-300 border-gray-300 dark:border-gray-600 focus:ring focus:ring-indigo-200 dark:focus:ring-indigo-500 rounded-md shadow-sm">
-                                <option value="">{{ __('Selecciona un curso') }}</option>
+                                <option value="">{{ __('Asigne un curso (Opcional)') }}</option>
                                 <!-- Pre-Básica -->
                                 <optgroup label="Pre-Básica" style="font-weight: bold;">
                                     @foreach ($cursos as $curso)
