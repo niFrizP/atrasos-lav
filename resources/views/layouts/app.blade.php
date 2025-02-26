@@ -16,6 +16,7 @@
 
 
     <!-- Scripts -->
+    <script src="https://js.sentry-cdn.com/8591134519c159280367d7a967bbea01.min.js" crossorigin="anonymous"></script>
     @vite(['resources/css/app.css', 'resources/js/app.js']) <!-- Vite.js para Laravel -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script> <!-- CDN para jQuery -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script> <!-- CDN para Alpine.js -->
