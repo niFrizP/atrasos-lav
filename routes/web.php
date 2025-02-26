@@ -9,7 +9,8 @@ use App\Http\Controllers\AtrasoController;
 use App\Http\Controllers\EstudianteController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\BusquedaController;
-
+use App\Http\Controllers\Auth\PasswordResetLinkController;
+use App\Http\Controllers\Auth\NewPasswordController;
 
 // Redicción a inicio
 Route::get('/', function () {
@@ -76,6 +77,19 @@ Route::get('/buscar-estudiante', [BusquedaController::class, 'buscarEstudiante']
 Route::get('/buscar-profesor', [BusquedaController::class, 'buscarProfesor'])->name('buscar.profesor');
 Route::get('/buscar-atraso', [BusquedaController::class, 'buscarAtraso'])->name('buscar.atraso');
 Route::get('/buscar-curso', [BusquedaController::class, 'buscarCurso'])->name('buscar.curso');
+
+// Rutas de restablecimiento de contraseña
+Route::get('forgot-password', function () {
+    return view('auth.forgot-password');
+})->middleware('guest')->name('password.request');
+
+Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])->middleware('guest')->name('password.email');
+
+Route::get('reset-password/{token}', function ($token) {
+    return view('auth.reset-password', ['token' => $token]);
+})->middleware('guest')->name('password.reset');
+
+Route::post('reset-password', [NewPasswordController::class, 'store'])->middleware('guest')->name('password.update');
 
 
 // Rutas de autenticación

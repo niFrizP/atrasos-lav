@@ -143,4 +143,9 @@ class Usuario extends Authenticatable
         $this->qr = $qrCode; // Guardamos el QR en la BD
         $this->save();
     }
+
+    public function getEmailForPasswordReset()
+    {
+        return $this->correo;
+    }
 }

@@ -7,8 +7,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
 use Illuminate\View\View;
-use Illuminate\Support\Facades\Log;
-
 
 class PasswordResetLinkController extends Controller
 {
@@ -27,29 +25,18 @@ class PasswordResetLinkController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        // Validar el email (correo)
-        $request->validate([
-            'correo' => ['required', 'email'], 
-        ]);
+        // Validar el correo
+        $request->validate(['correo' => 'required|email']);
 
         // Intentar enviar el enlace de restablecimiento de contraseña
         $status = Password::sendResetLink(
             $request->only('correo')
         );
 
-        // Verificar el estado
-        if ($status === Password::RESET_LINK_SENT) {
-            // Mensaje en consola para éxito
-            Log::info('Correo de restablecimiento de contraseña enviado a: ' . $request->correo);
-        } else {
-            // Mensaje en consola para error
-            Log::error('Error al enviar el correo de restablecimiento de contraseña a: ' . $request->correo);
-        }
-
-        // Retornar la respuesta original con el estado del envío del correo
+        // Retornar la respuesta con el estado del envío del correo
         return $status === Password::RESET_LINK_SENT
             ? back()->with('status', __($status))
             : back()->withInput($request->only('correo'))
-                ->withErrors(['correo' => __($status)]);
+            ->withErrors(['correo' => __($status)]);
     }
 }
