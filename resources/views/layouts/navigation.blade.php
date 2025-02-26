@@ -13,20 +13,30 @@
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Inicio') }}
+                        <i class="fa-solid fa-house"></i>
+                        <span class="ml-3">{{ __('Inicio') }}</span>
                     </x-nav-link>
+
                     <x-nav-link :href="route('atrasos.index')" :active="request()->routeIs('atrasos.index')">
-                        {{ __('Atrasos') }}
+                        <i class="fa-solid fa-user-clock"></i>
+                        <span class="ml-3">{{ __('Atrasos') }}</span>
                     </x-nav-link>
+
                     <x-nav-link :href="route('cursos.index')" :active="request()->routeIs('cursos.index')">
-                        {{ __('Cursos') }}
+                        <i class="fa-solid fa-house-user"></i>
+                        <span class="ml-3">{{ __('Cursos') }}</span>
                     </x-nav-link>
+
                     <x-nav-link :href="route('estudiantes.index')" :active="request()->routeIs('estudiantes.index')">
-                        {{ __('Estudiantes') }}
+                        <i class="fa-solid fa-book-open-reader"></i>
+                        <span class="ml-3">{{ __('Estudiantes') }}</span>
                     </x-nav-link>
+
                     <x-nav-link :href="route('profesores.index')" :active="request()->routeIs('profesores.index')">
-                        {{ __('Profesores') }}
+                        <i class="fa-solid fa-chalkboard-user"></i>
+                        <span class="ml-3">{{ __('Profesores') }}</span>
                     </x-nav-link>
+
                     <script>
                         // Script que carga el tema seleccionado por el usuario o el esquema preferido del sistema
                         if (localStorage.getItem('theme') === 'dark' ||
@@ -66,7 +76,8 @@
 
                     <x-slot name="content">
                         <x-dropdown-link :href="route('profile.edit')">
-                            {{ __('Perfil') }}
+                            <i class="fa-solid fa-user"></i>
+                            <span class="ml-3"> {{ __('Perfil') }}</span>
                         </x-dropdown-link>
 
                         <!-- Authentication -->
@@ -76,7 +87,8 @@
                             <x-dropdown-link :href="route('logout')"
                                 onclick="event.preventDefault();
                                                 this.closest('form').submit();">
-                                {{ __('Salida') }}
+                                <i class="fa-solid fa-right-from-bracket"></i>
+                                <span class="ml-3"> {{ __('Cerrar Sesión') }} </span>
                             </x-dropdown-link>
                         </form>
                     </x-slot>
@@ -103,32 +115,38 @@
     <div :class="{ 'block': open, 'hidden': !open }" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                {{ __('Inicio') }}
+                <i class="fa-solid fa-house"></i>
+                <span class="ml-3">{{ __('Inicio') }}</span>
             </x-responsive-nav-link>
+
             <x-responsive-nav-link :href="route('atrasos.index')" :active="request()->routeIs('atrasos.index')">
-                        {{ __('Atrasos') }}
+                <i class="fa-solid fa-user-clock"></i>
+                <span class="ml-3">{{ __('Atrasos') }}</span>
             </x-responsive-nav-link>
+
             <x-responsive-nav-link :href="route('cursos.index')" :active="request()->routeIs('cursos.index')">
-                        {{ __('Cursos') }}
+                <i class="fa-solid fa-house-user"></i>
+                <span class="ml-3">{{ __('Cursos') }}</span>
             </x-responsive-nav-link>
+
             <x-responsive-nav-link :href="route('estudiantes.index')" :active="request()->routeIs('estudiantes.index')">
-                        {{ __('Estudiantes') }}
+                <i class="fa-solid fa-book-open-reader"></i>
+                <span class="ml-3">{{ __('Estudiantes') }}</span>
             </x-responsive-nav-link>
+
             <x-responsive-nav-link :href="route('profesores.index')" :active="request()->routeIs('profesores.index')">
-                        {{ __('Profesores') }}
+                <i class="fa-solid fa-chalkboard-user"></i>
+                <span class="ml-3">{{ __('Profesores') }}</span>
             </x-responsive-nav-link>
+
         </div>
 
         <!-- Responsive Settings Options -->
         <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
-            <div class="px-4">
-                <div class="font-medium text-base text-gray-800 dark:text-gray-200">{{ Auth::user()->nomape }}</div>
-                <div class="font-medium text-sm text-gray-500">{{ Auth::user()->correo }}</div>
-            </div>
-
             <div class="mt-3 space-y-1">
                 <x-responsive-nav-link :href="route('profile.edit')">
-                    {{ __('Perfil') }}
+                    <i class="fa-solid fa-user"></i>
+                    <span class="ml-3"> {{ __('Perfil') }} </span>
                 </x-responsive-nav-link>
 
                 <!-- Authentication -->
@@ -138,9 +156,15 @@
                     <x-responsive-nav-link :href="route('logout')"
                         onclick="event.preventDefault();
                                         this.closest('form').submit();">
-                        {{ __('Salida') }}
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span class="ml-3"> {{ __('Cerrar Sesión') }} </span>
                     </x-responsive-nav-link>
                 </form>
+                <div class="px-4 pb-1 border-t border-gray-200 dark:border-gray-600">
+                    <div class="font-medium text-base text-gray-800 dark:text-gray-200">{{ Auth::user()->nomape }}
+                    </div>
+                    <div class="font-medium text-sm text-gray-500">{{ Auth::user()->correo }}</div>
+                </div>
             </div>
         </div>
     </div>
@@ -174,4 +198,3 @@
         }
     });
 </script>
-<script src="https://kit.fontawesome.com/6fb68a0884.js" crossorigin="anonymous"></script>

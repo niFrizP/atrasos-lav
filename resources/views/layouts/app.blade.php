@@ -13,6 +13,8 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- CDN para Font Awesome -->
+    <script src="https://kit.fontawesome.com/5fa004d46a.js" crossorigin="anonymous"></script> <!-- CDN para Font Awesome -->
 
 
     <!-- Scripts -->
@@ -59,5 +61,4 @@
         </main>
     </div>
 </body>
-
 </html>
