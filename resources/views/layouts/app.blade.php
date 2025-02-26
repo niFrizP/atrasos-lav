@@ -48,7 +48,7 @@
                     @if (!request()->routeIs('dashboard'))
                         <button onclick="history.back()"
                             class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                            ← Volver
+                            <i class="fa-solid fa-angle-left"></i> <span class="ml-3"> Volver</span>
                         </button>
                     @endif
                 </div>
@@ -61,4 +61,5 @@
         </main>
     </div>
 </body>
+
 </html>
