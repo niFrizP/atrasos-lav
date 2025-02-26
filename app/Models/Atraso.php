@@ -20,8 +20,15 @@ class Atraso extends Model
     // Relación inversa con Estudiante
     public function estudiante()
     {
-        return $this->belongsTo(Estudiante::class);
+        return $this->belongsTo(Estudiante::class, 'estudiante_id');
     }
+
+    // Relación: Total de atrasos de un estudiante.
+    public function atrasos()
+    {
+        return $this->hasMany(Atraso::class, 'estudiante_id');
+    }
+
 
     // Relación: Un atraso pertenece a un inspector.
     public function inspector()

@@ -12,15 +12,26 @@
                     <h1 class="text-2xl font-bold mb-4">{{ __('Listado de Estudiantes') }}</h1>
 
                     <!-- Buscador -->
-                    <form method="GET" action="{{ route('estudiantes.index') }}" class="mb-4">
-                        <input type="text" name="search" placeholder="Buscar por Nombre o RUT"
-                            class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:text-white">
-                        <button type="submit"
-                            class="mt-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg">
+                    <form method="GET" action="{{ route('estudiantes.index') }}"
+                        class="mb-4 flex items-center justify-center">
+                        <div class="relative w-3/4">
+                            <input type="text" name="search" placeholder="🔎 Buscar por Nombre o RUT "
+                                class="w-full p-2 pl-10 border rounded-md dark:bg-gray-700 dark:text-white">
+                        </div>
+                        <button type="submit" value="Search"
+                            class="ml-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg">
                             Buscar
                         </button>
                     </form>
                     <!-- Fin Buscador -->
+                    <!-- Botón para agregar estudiante -->
+                    <div class="mt-6 mb-2 flex justify-start">
+                        <a href="{{ route('estudiantes.create') }}"
+                            class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg">
+                            {{ __('Crear Estudiante') }}
+                        </a>
+                    </div>
+                    <!-- Fin Botón para agregar estudiante -->
 
                     <!-- Tabla de estudiantes -->
                     <div class="overflow-x-auto">
@@ -78,14 +89,6 @@
                         <div class="mt-4">
                             {{ $estudiantes->links() }}
                         </div>
-                    </div>
-
-                    <!-- Botón para agregar estudiante -->
-                    <div class="mt-6 flex justify-end">
-                        <a href="{{ route('estudiantes.create') }}"
-                            class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg">
-                            {{ __('Agregar Estudiante') }}
-                        </a>
                     </div>
 
                 </div>

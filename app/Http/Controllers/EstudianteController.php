@@ -31,7 +31,7 @@ class EstudianteController extends Controller
                         ->orWhere('rut', 'like', '%' . $search . '%'); // Buscar por RUT
                 });
             })
-            ->orderBy('created_at', 'desc')
+            ->orderBy('nomape', 'asc')
             // Paginar los resultados
             ->paginate(5);
         // Pasar los estudiantes a la vista
@@ -60,7 +60,6 @@ class EstudianteController extends Controller
             ];
         }));
     }
-
 
 
     /**

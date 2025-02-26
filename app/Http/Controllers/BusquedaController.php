@@ -32,12 +32,6 @@ class BusquedaController extends Controller
     {
         $query = $request->get('query');
 
-        // Buscar estudiantes (rol_id 2)
-        $estudiantes = Usuario::where('rol_id', 2)
-            ->where('nomape', 'like', '%' . $query . '%')
-            ->orWhere('rut', 'like', '%' . $query . '%')
-            ->get();
-
         // Buscar profesores (rol_id 4)
         $profesores = Usuario::where('rol_id', 4)
             ->where(function ($q) use ($query) {
@@ -90,8 +84,7 @@ class BusquedaController extends Controller
 
         $profesores = Usuario::where('rol_id', 4)
             ->where(function ($q) use ($query) {
-                $q->where('nomape', 'like', '%' . $query . '%')
-                    ->orWhere('rut', 'like', '%' . $query . '%');
+                $q->where('nomape', 'like', '%' . $query . '%');
             })
             ->get();
 

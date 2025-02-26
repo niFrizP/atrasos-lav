@@ -23,9 +23,8 @@ class Estudiante extends Model
     //Relación: Un estudiante tiene muchos atrasos.
     public function atrasos()
     {
-        return $this->hasMany(Atraso::class);
+        return $this->hasMany(Atraso::class, 'estudiante_id');
     }
-
 
 
     public function getRutFormattedAttribute()

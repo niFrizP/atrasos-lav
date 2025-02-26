@@ -17,14 +17,14 @@ class ProfesorController extends Controller
      */
     public function index(Request $request)
     {
-        $nombre = $request->input('nombre');
+        $search = $request->input('search');
 
         $profesores = Usuario::where('rol_id', 4)  // Solo profesores
             ->where('activo', 1)  // Profesores activos
-            ->when($nombre, function ($query, $nombre) {
-                return $query->where(function ($query) use ($nombre) {
-                    $query->where('nomape', 'like', '%' . $nombre . '%')
-                        ->orWhere('rut', 'like', '%' . $nombre . '%');
+            ->when($search, function ($query, $search) {
+                return $query->where(function ($query) use ($search) {
+                    $query->where('nomape', 'like', '%' . $search . '%')
+                        ->orWhere('rut', 'like', '%' . $search . '%');
                 });
             })
             ->with('cursoActual.grado')  // Relación curso y grado

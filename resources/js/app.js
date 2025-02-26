@@ -6,6 +6,7 @@ window.Alpine = Alpine;
 
 Alpine.start();
 
+// Sentry
 Sentry.onLoad(function () {
     if (!Sentry.getCurrentHub().getClient()) {
         // Solo inicializa si no está inicializado ya
@@ -18,3 +19,8 @@ Sentry.onLoad(function () {
         });
     }
 });
+
+// Limpiador de búsqueda
+function clearSearch() {
+    document.getElementById('searchInput').value = '';
+}

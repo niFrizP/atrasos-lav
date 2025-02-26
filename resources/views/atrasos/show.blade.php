@@ -55,21 +55,10 @@
                                     {{ __('Ver imagen actual') }}
                                 </a>
                             </div>
-                            <div class="mt-2">
-                                <img src="{{ $atraso->evidencia_url }}" alt="Evidencia del Atraso" class="max-w-xs">
-                            </div>
                     </div>
                 @else
                     <p>{{ __('No hay evidencia') }}</p>
                     @endif
-                </div>
-
-                <!-- Botón para volver -->
-                <div class="mt-6">
-                    <a href="{{ route('atrasos.index') }}"
-                        class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white font-semibold rounded-lg">
-                        {{ __('Volver a la lista') }}
-                    </a>
                 </div>
 
             </div>
