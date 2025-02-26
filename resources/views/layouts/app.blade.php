@@ -17,8 +17,11 @@
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js']) <!-- Vite.js para Laravel -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script> <!-- CDN para jQuery -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script> <!-- CDN para Alpine.js -->
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <!-- CDN para Select2 -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <!-- CDN para Select2 -->
 
 
@@ -32,8 +35,19 @@
         <!-- Page Heading -->
         @isset($header)
             <header class="bg-white dark:bg-gray-800 shadow">
-                <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                    {{ $header }}
+                <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+                    <!-- Título -->
+                    <div>
+                        {{ $header }}
+                    </div>
+
+                    <!-- Botón de Volver (oculto en dashboard) -->
+                    @if (!request()->routeIs('dashboard'))
+                        <button onclick="history.back()"
+                            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                            ← Volver
+                        </button>
+                    @endif
                 </div>
             </header>
         @endisset
@@ -44,15 +58,5 @@
         </main>
     </div>
 </body>
-
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/js/select2.min.js"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        $('#estudiante_id').select2({
-            placeholder: 'Selecciona un estudiante',
-            allowClear: true,
-        });
-    });
-</script>
 
 </html>
