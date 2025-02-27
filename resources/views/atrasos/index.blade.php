@@ -40,11 +40,8 @@
                                     <th class="border border-gray-300 dark:border-gray-600 p-2">{{ __('Estudiante') }}
                                     </th>
                                     <th class="border border-gray-300 dark:border-gray-600 p-2">{{ __('Curso') }}</th>
-                                    <th class="border border-gray-300 dark:border-gray-600 p-2">
-                                        {{ __('Fecha de atraso') }}</th>
+                                    <th class="border border-gray-300 dark:border-gray-600 p-2">{{ __('Fecha') }}</th>
                                     <th class="border border-gray-300 dark:border-gray-600 p-2">{{ __('Razón') }}</th>
-                                    <th class="border border-gray-300 dark:border-gray-600 p-2">
-                                        {{ __('Total Atrasos') }}</th>
                                     <th class="border border-gray-300 dark:border-gray-600 p-2">{{ __('Acciones') }}
                                     </th>
                                 </tr>
@@ -52,44 +49,43 @@
                             <tbody>
                                 @forelse ($atrasos as $atraso)
                                     <tr class="border border-gray-300 dark:border-gray-700">
-                                        <td>{{ $atraso->estudiante->nomape }}</td>
-                                        <td>{{ $atraso->estudiante->curso->codigo }}</td>
-                                        <td>{{ $atraso->fecha_atraso }}</td>
-                                        <td>{{ $atraso->razon }}</td>
-                                        <td>{{ $atraso->estudiante->atrasos->count() ?? 0 }} <!-- Total de atrasos -->
-                                        </td>
+                                        <td class="p-2">{{ $atraso->estudiante->nomape }}</td>
+                                        <td class="p-2">{{ $atraso->estudiante->curso->codigo ?? 'Sin curso' }}</td>
+                                        <td class="p-2">{{ $atraso->fecha_atraso }}</td>
+                                        <td class="p-2">{{ $atraso->razon }}</td>
                                         <td class="p-2 flex space-x-2">
-                                            <a href="{{ route('atrasos.show', $atraso->estudiante->id) }}"
-                                                class="px-2 py-1 bg-blue-500 text-white rounded">Ver</a>
-                                            <a href="{{ route('atrasos.edit', $atraso->estudiante->id) }}"
-                                                class="px-2 py-1 bg-yellow-500 text-white rounded">Editar</a>
-                                            <form action="{{ route('atrasos.destroy', $atraso->estudiante->id) }}"
-                                                method="POST"
-                                                onsubmit="return confirm('¿Seguro que quieres eliminar este estudiante?');">
+                                            <a href="{{ route('atrasos.show', $atraso->id) }}"
+                                                class="px-2 py-1 bg-blue-500 text-white rounded">
+                                                Ver
+                                            </a>
+                                            <a href="{{ route('atrasos.edit', $atraso->id) }}"
+                                                class="px-2 py-1 bg-yellow-500 text-white rounded">
+                                                Editar
+                                            </a>
+                                            <form action="{{ route('atrasos.destroy', $atraso->id) }}" method="POST"
+                                                onsubmit="return confirm('¿Seguro que quieres eliminar este atraso?');">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit"
-                                                    class="px-2 py-1 bg-red-500 text-white rounded">Eliminar</button>
+                                                <button type="submit" class="px-2 py-1 bg-red-500 text-white rounded">
+                                                    Eliminar
+                                                </button>
                                             </form>
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="4" class="text-center p-4">
-                                            {{ __('No se encontraron atrasos.') }}
+                                        <td colspan="3" class="text-center p-4">
+                                            {{ __('No se encontraron atrasos que coincidan con la búsqueda.') }}
                                         </td>
                                     </tr>
                                 @endforelse
-
                             </tbody>
                         </table>
-
                         <!-- Mostrar enlaces de paginación -->
                         <div class="mt-4">
                             {{ $atrasos->links() }}
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
