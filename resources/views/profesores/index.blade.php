@@ -25,6 +25,14 @@
                     </form>
                     <!-- Fin Buscador -->
 
+                    <!-- Botón para agregar un nuevo profesor -->
+                    <div class="mt-6 mb-2 flex justify-start">
+                        <a href="{{ route('profesores.create') }}"
+                            class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg">
+                            {{ __('Agregar Profesor') }}
+                        </a>
+                    </div>
+
 
                     <div class="overflow-x-auto">
                         <table class="w-full border border-gray-300 dark:border-gray-700">
@@ -84,12 +92,6 @@
                         </div>
                     </div>
 
-                    <div class="mt-6 flex justify-end">
-                        <a href="{{ route('profesores.create') }}"
-                            class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg">
-                            {{ __('Agregar Profesor') }}
-                        </a>
-                    </div>
                 </div>
             </div>
         </div>
