@@ -47,4 +47,12 @@
             </x-primary-button>
         </div>
     </form>
+    <footer class="mt-8 text-center text-gray-600 dark:text-gray-400 text-sm">
+        &copy; {{ now()->year }} Liceo Antonio Varas de Cauquenes.
+        <br><br>
+        <p>Proyecto desarrollado por <a href="https://www.linkedin.com/in/nicolasfrizpereira/" target="_blank">
+                niFrizP</a>
+            en
+            colaboración con el <a href="https://web.facebook.com/enlaces.lav.3">Departamento de Innovación LAV</a></p>
+    </footer>
 </x-guest-layout>

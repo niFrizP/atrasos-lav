@@ -10,31 +10,56 @@ use Illuminate\Support\Facades\Auth;
 class ProfileController extends Controller
 {
     /**
-     * Display the user's profile form.
+     * Muestra el formulario de perfil del usuario.
      */
     public function edit(Request $request): View
     {
-        // Pasa el usuario autenticado con el nombre 'user'
         return view('profile.edit', [
             'user' => $request->user(),
         ]);
     }
 
     /**
-     * Update the user's profile information.
+     * Actualiza la información del perfil del usuario.
      */
     public function update(Request $request): RedirectResponse
     {
+        // Valida los campos permitidos
+        $validatedData = $request->validate([
+            'nomape'           => 'required|string|max:350',
+            'correo'           => 'required|email|max:255',
+            'rut'              => 'nullable|string|max:15',
+            'rut_extranjero'   => 'nullable|integer',
+            'telefono'         => 'nullable|string|max:9',
+            'extranjero'       => 'nullable|boolean',
+        ]);
+
         $user = $request->user();
-        $user->fill($request->all()); // Asegúrate de validar y filtrar datos
+        $user->nomape   = $validatedData['nomape'];
+        $user->correo   = $validatedData['correo'];
+        $user->telefono = $validatedData['telefono'] ?? null;
+
+        // Verifica si el usuario es extranjero
+        if (isset($validatedData['extranjero']) && $validatedData['extranjero']) {
+            $user->extranjero    = 1;
+            $user->rut_extranjero = $validatedData['rut_extranjero'];
+            $user->rut           = null;
+        } else {
+            $user->extranjero    = 0;
+            $user->rut           = $validatedData['rut'];
+            $user->rut_extranjero = null;
+        }
+
         $user->save();
 
-        return redirect()->route('profile.edit')->with('status', 'profile-updated');
+        // Genera el código QR después de guardar los cambios
         $user->generateQR();
+
+        return redirect()->route('profile.edit')->with('status', 'profile-updated');
     }
 
     /**
-     * Delete the user's account.
+     * Elimina la cuenta del usuario.
      */
     public function destroy(Request $request): RedirectResponse
     {
