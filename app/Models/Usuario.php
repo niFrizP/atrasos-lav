@@ -25,10 +25,11 @@ class Usuario extends Authenticatable
     // Especifica los campos que se pueden asignar en masa.
     protected $fillable = ['nomape', 'rut', 'rut_extranjero', 'extranjero', 'telefono', 'correo', 'password', 'activo', 'rol_id'];
 
-    // Especifica el campo que se usará como nombre de usuario.
+    // Especifica el campo que se usará como nombre de usuario para la autenticación.
+    // Modificamos para que use el 'rut' en lugar de 'correo'
     public function getAuthIdentifierName()
     {
-        return 'correo';
+        return 'rut';
     }
 
     // Relación: Un usuario puede tener muchos cursos.
@@ -36,7 +37,6 @@ class Usuario extends Authenticatable
     {
         return $this->hasMany(ProfesoresCurso::class, 'usuario_id');
     }
-
 
     // Un usuario puede tener un curso activo.
     public function profesorCursoActivo()

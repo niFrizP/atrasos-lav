@@ -2,22 +2,21 @@
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
     <form method="POST" action="{{ route('login') }}">
-
         @csrf
 
-        <!-- Email Address -->
+        <!-- Rut del Usuario -->
         <div>
-            <x-input-label for="correo" :value="__('Correo')" />
-            <x-text-input id="correo" class="block mt-1 w-full" type="email" name="correo" :value="old('correo')" required=""
-                autofocus autocomplete="username" placeholder=" ej: john.doe@lav.cl" />
-            <x-input-error :messages="$errors->get('correo')" class="mt-2" />
+            <x-input-label for="rut" :value="__('RUT')" />
+            <x-text-input id="rut" class="block mt-1 w-full" type="text" name="rut" maxlength="12"
+                placeholder="Ej: 9.999.999-9" required oninput="formatRut(this)" />
+            <x-input-error :messages="$errors->get('rut')" class="mt-2" />
         </div>
 
         <!-- Password -->
         <div class="mt-4">
             <x-input-label for="password" :value="__('Contraseña')" />
-            <x-text-input id="password" class="block mt-1 w-full" type="password" name="password" required="" 
-                autocomplete="current-password" placeholder="********"  />
+            <x-text-input id="password" class="block mt-1 w-full" type="password" name="password" required
+                autocomplete="current-password" placeholder="********" />
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 
@@ -27,7 +26,6 @@
                 <input id="remember_me" type="checkbox"
                     class="rounded dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-indigo-600 shadow-sm focus:ring-indigo-500 dark:focus:ring-indigo-600 dark:focus:ring-offset-gray-800"
                     name="remember">
-
                 <span class="ms-2 text-sm text-gray-600 dark:text-gray-400">{{ __('Recordarme') }}</span>
             </label>
         </div>
@@ -45,12 +43,25 @@
             </x-primary-button>
         </div>
     </form>
+    <script>
+        function formatRut(input) {
+            let value = input.value.toUpperCase().replace(/[^0-9K]/g, ''); // Limpiamos el valor
+            // Verificamos la longitud
+            if (value.length === 9) {
+                value = value.replace(/^(\d{2})(\d{3})(\d{3})([\dkK])$/, '$1.$2.$3-$4');
+            } else if (value.length === 8) {
+                value = value.replace(/^(\d{1})(\d{3})(\d{3})([\dkK])$/, '$1.$2.$3-$4');
+            }
+
+            input.value = value;
+        }
+    </script>
     <footer class="mt-8 text-center text-gray-600 dark:text-gray-400 text-sm">
         &copy; {{ now()->year }} Liceo Antonio Varas de Cauquenes.
         <br><br>
         <p>Proyecto desarrollado por <a href="https://www.linkedin.com/in/nicolasfrizpereira/" target="_blank">
                 niFrizP</a>
-            en
-            colaboración con el <a href="https://web.facebook.com/enlaces.lav.3">Departamento de Innovación LAV</a></p>
+            en colaboración con el <a href="https://web.facebook.com/enlaces.lav.3">Departamento de Innovación LAV</a>
+        </p>
     </footer>
 </x-guest-layout>

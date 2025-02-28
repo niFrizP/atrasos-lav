@@ -1,10 +1,10 @@
 import './bootstrap';
-
 import Alpine from 'alpinejs';
 
 window.Alpine = Alpine;
 
 Alpine.start();
+
 
 // Sentry
 Sentry.onLoad(function () {
@@ -37,3 +37,14 @@ function formatRut(input) {
 
     input.value = value;
 }
+
+// Hacer disponible en el ámbito global
+window.formatRut = function (input) {
+    let value = input.value.toUpperCase().replace(/[^0-9K]/g, ''); // Limpiamos el valor
+    if (value.length === 9) {
+        value = value.replace(/^(\d{2})(\d{3})(\d{3})([\dkK])$/, '$1.$2.$3-$4');
+    } else if (value.length === 8) {
+        value = value.replace(/^(\d{1})(\d{3})(\d{3})([\dkK])$/, '$1.$2.$3-$4');
+    }
+    input.value = value;
+};
