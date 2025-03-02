@@ -91,6 +91,9 @@ Route::get('reset-password/{token}', function ($token) {
 
 Route::post('reset-password', [NewPasswordController::class, 'store'])->middleware('guest')->name('password.update');
 
+// Generar QR
+Route::post('/estudiantes/{estudiante}/generar-qr', [EstudianteController::class, 'generarQR'])
+    ->name('estudiantes.generateQR');
 
 // Rutas de autenticación
 require __DIR__ . '/auth.php';

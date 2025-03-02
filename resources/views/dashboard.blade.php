@@ -22,9 +22,9 @@
                 <!-- Grid de tarjetas (2 columnas x 2 filas) -->
                 <div class="grid grid-cols-2 gap-6">
                     <!-- Tarjeta 1: Total de Atrasos Registrados -->
-                    <div class="rounded-lg p-6 shadow-lg bg-yellow-600 text-white w-full justify-center">
-                        <i class="fas items-center justify-center fa-clipboard-list text-2xl text-white"></i>
-                        <div class="flex flex-col items-end space-x-4">
+                    <div class="rounded-lg p-6 shadow-lg bg-yellow-600 text-white w-full">
+                        <i class="fas fa-clipboard-list text-2xl text-white"></i>
+                        <div class="flex justify-items-center space-x-4">
                             <div>
                                 <h2 class="text-lg font-semibold">Total de Atrasos Registrados</h2>
                                 <p class="text-4xl font-bold mt-2">{{ $cantidadAtrasos }}</p>
@@ -77,7 +77,7 @@
                     @else
                         <div class="overflow-x-auto">
                             <table
-                                class="w-8 divide-y divide-gray-200 dark:divide-gray-700 border border-gray-300 dark:border-gray-700 mx-auto">
+                                class="divide-y divide-gray-200 dark:divide-gray-700 border border-gray-300 dark:border-gray-700 mx-auto">
                                 <thead class="bg-gray-100 dark:bg-gray-700">
                                     <tr>
                                         <th

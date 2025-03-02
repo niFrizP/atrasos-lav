@@ -50,7 +50,15 @@
                                 @forelse ($atrasos as $atraso)
                                     <tr class="border border-gray-300 dark:border-gray-700">
                                         <td class="p-2">{{ $atraso->estudiante->nomape }}</td>
-                                        <td class="p-2">{{ $atraso->estudiante->curso->codigo ?? 'Sin curso' }}</td>
+                                        <td class="p-2">
+                                            @if ($atraso->estudiante->curso)
+                                                <!-- Mostrar el curso y grado -->
+                                                {{ $atraso->estudiante->curso->codigo }} -
+                                                {{ $atraso->estudiante->curso->grado->nombre ?? 'Sin grado' }}
+                                            @else
+                                                {{ 'Sin curso' }}
+                                            @endif
+                                        </td>
                                         <td class="p-2">{{ $atraso->fecha_atraso }}</td>
                                         <td class="p-2">{{ $atraso->razon }}</td>
                                         <td class="p-2 flex space-x-2">

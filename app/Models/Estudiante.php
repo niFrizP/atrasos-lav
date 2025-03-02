@@ -8,7 +8,7 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 class Estudiante extends Model
 {
     protected $table = 'estudiantes';
-    protected $fillable = ['nomape', 'rut', 'telefono', 'correo', 'qr', 'curso_id', 'fotografia', 'estado_id'];
+    protected $fillable = ['nomape', 'rut', 'rut_extranjero', 'extranjero', 'fec_naci', 'telefono', 'correo', 'qr', 'curso_id', 'fotografia', 'estado_id'];
     protected $attributes = [
         'estado_id' => 1, // Asumiendo que 1 corresponde a "Activo" en la tabla estados.
     ];
@@ -50,10 +50,20 @@ class Estudiante extends Model
 
     public function generateQR()
     {
+        // Verificar si el estudiante tiene asignado un curso
+        if ($this->curso) {
+            // Se asume que el curso siempre tiene una relación 'grado' (puedes agregar una verificación similar si es necesario)
+            $cursoInfo = $this->curso->codigo . ' - ' . $this->curso->grado->nombre;
+        } else {
+            $cursoInfo = 'Sin curso asignado';
+        }
+
         $data = json_encode([
             'Nombre' => $this->nomape,
             'RUT' => $this->rut,
-            'Curso' => $this->curso->codigo . ' - ' . $this->curso->grado->nombre,
+            'Fecha de Nacimiento' => $this->fec_naci,
+            'Extranjero' => $this->extranjero ? 'Sí' : 'No',
+            'Curso' => $cursoInfo,
             'Correo' => $this->correo,
             'Telefono' => $this->telefono,
         ]);

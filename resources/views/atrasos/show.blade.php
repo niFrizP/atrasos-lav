@@ -18,13 +18,22 @@
                         {{ $atraso->estudiante->nomape }} ({{ $atraso->estudiante->rut }})
                     </div>
 
-                    <!-- Si deseas mostrar el curso asociado al estudiante -->
-                    @if ($atraso->estudiante->relationLoaded('curso') && $atraso->estudiante->curso)
-                        <div class="mb-4">
-                            <strong>{{ __('Curso:') }}</strong>
-                            {{ $atraso->estudiante->curso->nombre ?? __('No definido') }}
-                        </div>
-                    @endif
+                    <!-- Curso y Grado -->
+                    <div class="mb-4">
+                        @if ($atraso->estudiante->relationLoaded('curso') && $atraso->estudiante->curso)
+                            <div class="mb-4">
+                                <strong>{{ __('Curso:') }}</strong>
+                                {{ $atraso->estudiante->curso->codigo ?? '' }}
+                                -
+                                {{ $atraso->estudiante->curso->grado->nombre ?? '' }}
+                            </div>
+                        @else
+                            <div class="mb-4">
+                                <strong>{{ __('Curso:') }}</strong> {{ __('No definido') }}
+                            </div>
+                        @endif
+
+                    </div>
 
                     <!-- Fecha del Atraso -->
                     <div class="mb-4">

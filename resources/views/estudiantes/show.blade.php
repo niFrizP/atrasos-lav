@@ -15,30 +15,57 @@
                         <div class="w-2/3">
                             <p><strong>{{ __('Nombre Completo:') }}</strong> {{ $estudiante->nomape }}</p>
                             <br>
-                            <p><strong>{{ __('RUT:') }}</strong> {{ $estudiante->rut_formatted }}</p>
+                            @if ($estudiante->extranjero)
+                                <p><strong>{{ __('RUT Extranjero:') }}</strong> {{ $estudiante->rut_extranjero }}</p>
+                            @else
+                                <p><strong>{{ __('RUT:') }}</strong> {{ $estudiante->rut_formatted }}</p>
+                            @endif
+                            <br>
+                            <p><strong>{{ __('Fecha de Nacimiento:') }}</strong>
+                                {{ $estudiante->fec_naci ?? __('No registrada') }}
+                            </p>
                             <br>
                             <p><strong>{{ __('Correo Electrónico:') }}</strong>
                                 {{ $estudiante->correo ?? __('No registrado') }}</p>
                             <br>
-                            <p><strong>{{ __('Teléfono:') }}</strong> {{ $estudiante->telefono ?? __('No registrado') }}
-                            </p>
+                            <p><strong>{{ __('Teléfono:') }}</strong>
+                                {{ $estudiante->telefono ?? __('No registrado') }}</p>
                             <br>
                             <p><strong>{{ __('Curso:') }}</strong>
-                                {{ $estudiante->curso ? $estudiante->curso->codigo : __('Sin curso asignado') }}</p>
+                                @if ($estudiante->curso)
+                                    {{ $estudiante->curso->codigo }} - {{ $estudiante->curso->grado->nombre }}
+                                @else
+                                    {{ __('Sin curso asignado') }}
+                                @endif
+                            </p>
                         </div>
                     </div>
-                    <!-- Columna para el QR -->
-                    <div class="flex justify-end">
-                        <p class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                            {{ __('QR del Estudiante') }}</p>
-                            <br><br>
-                        @if ($estudiante->qr)
-                            <div class="QRCard">
+
+                    <!-- Sección de QR -->
+                    <div class="mt-8">
+                        <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                            {{ __('QR del Estudiante') }}
+                        </h2>
+
+                        <div class="flex flex-col items-center">
+                            @if ($estudiante->qr)
+                                <!-- Mostrar el QR si existe -->
                                 <img src="data:image/png;base64,{{ base64_encode($estudiante->qr) }}" alt="Código QR"
-                                    class="mx-auto" width="150" height="150">
-                            </div>
-                        @endif
+                                    class="mx-auto mb-4" width="150" height="150">
+                            @else
+                                <!-- Mostrar mensaje y botón si no hay QR -->
+                                <p class="text-red-500 mb-4">{{ __('QR no generado') }}</p>
+                                <form action="{{ route('estudiantes.generateQR', $estudiante) }}" method="POST">
+                                    @csrf
+                                    <button type="submit"
+                                        class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">
+                                        {{ __('Generar QR') }}
+                                    </button>
+                                </form>
+                            @endif
+                        </div>
                     </div>
+
                     <!-- Botones de acciones -->
                     <div class="flex justify-end mt-6 space-x-2">
                         <a href="{{ route('estudiantes.edit', $estudiante) }}"

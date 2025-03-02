@@ -22,12 +22,40 @@
                             <x-input-error :messages="$errors->get('nomape')" class="mt-2" />
                         </div>
 
-                        <!-- RUT -->
+                        <!-- Fecha de Nacimiento -->
                         <div class="mb-4">
+                            <x-input-label for="fec_naci" :value="__('Fecha de Nacimiento')" />
+                            <x-text-input id="fec_naci"
+                                class="form-select bg-white dark:bg-gray-800 dark:text-gray-300 border-gray-300 dark:border-gray-600 focus:ring focus:ring-indigo-200 dark:focus:ring-indigo-500 rounded-md shadow-sm"
+                                type="date" name="fec_naci" required />
+                            <x-input-error :messages="$errors->get('fec_naci')" class="mt-2" />
+                        </div>
+
+                        <!-- Input para RUT (estudiante no extranjero) -->
+                        <div class="mb-4" id="rut_container">
                             <x-input-label for="rut" :value="__('RUT')" />
                             <x-text-input id="rut" class="block mt-1 w-full" type="text" name="rut"
-                                maxlength="12" placeholder="Ej: 9.999.999-9" required oninput="formatRut(this)" />
+                                maxlength="12" value="{{ old('rut') }}" oninput="formatRut(this)" required />
                             <x-input-error :messages="$errors->get('rut')" class="mt-2" />
+                        </div>
+
+                        <!-- Input para RUT Extranjero (no se usará en create, se genera automáticamente) -->
+                        <div class="mb-4" id="rut_extranjero_container" style="display: none;">
+                            <x-input-label for="rut_extranjero" :value="__('RUT Extranjero')" />
+                            <x-text-input id="rut_extranjero" class="block mt-1 w-full" type="text"
+                                name="rut_extranjero" maxlength="12" value="{{ old('rut_extranjero') }}" />
+                            <x-input-error :messages="$errors->get('rut_extranjero')" class="mt-2" />
+                        </div>
+
+                        <!-- Checkbox para Estudiante Extranjero -->
+                        <div class="mb-4">
+                            <x-input-label for="extranjero" :value="__('¿Es extranjero?')" />
+                            <!-- Campo hidden para enviar 0 cuando no se marca -->
+                            <input type="hidden" name="extranjero" value="0">
+                            <input type="checkbox" id="extranjero" name="extranjero" value="1"
+                                {{ isset($estudiante) && $estudiante->extranjero ? 'checked' : '' }}
+                                onchange="toggleRutField()">
+                            <x-input-error :messages="$errors->get('extranjero')" class="mt-2" />
                         </div>
 
                         <!-- Correo -->
@@ -41,7 +69,7 @@
                         <div class="mb-4">
                             <x-input-label for="telefono" :value="__('Teléfono')" />
                             <x-text-input id="telefono" class="block mt-1 w-full" type="text" name="telefono"
-                                maxlenght="9" />
+                                maxlength="9" />
                             <x-input-error :messages="$errors->get('telefono')" class="mt-2" />
                         </div>
 
@@ -103,7 +131,6 @@
                             <x-input-error :messages="$errors->get('curso_id')" class="mt-2" />
                         </div>
 
-
                         <!-- Botones -->
                         <div class="flex justify-end mt-6">
                             <a href="{{ route('estudiantes.index') }}"
@@ -117,20 +144,42 @@
                     </form>
                     <script>
                         function formatRut(input) {
-                            let value = input.value.toUpperCase().replace(/[^0-9K]/g, ''); // Limpiamos el valor
-                            // Verificamos la longitud
+                            let value = input.value.toUpperCase().replace(/[^0-9K]/g, '');
                             if (value.length === 9) {
                                 value = value.replace(/^(\d{2})(\d{3})(\d{3})([\dkK])$/, '$1.$2.$3-$4');
                             } else if (value.length === 8) {
                                 value = value.replace(/^(\d{1})(\d{3})(\d{3})([\dkK])$/, '$1.$2.$3-$4');
                             }
-
                             input.value = value;
+                        }
+
+                        function toggleRutField() {
+                            const isChecked = document.getElementById('extranjero').checked;
+                            const rutContainer = document.getElementById('rut_container');
+                            const rutExtranjeroContainer = document.getElementById('rut_extranjero_container');
+
+                            if (isChecked) {
+                                // Si es extranjero, ocultamos ambos campos;
+                                // El controlador generará el rut_extranjero automáticamente.
+                                rutContainer.style.display = 'none';
+                                rutExtranjeroContainer.style.display = 'none';
+                                document.getElementById('rut').removeAttribute('required');
+                                document.getElementById('rut_extranjero').removeAttribute('required');
+                            } else {
+                                // Si no es extranjero, mostramos solo el input de RUT.
+                                rutContainer.style.display = 'block';
+                                rutExtranjeroContainer.style.display = 'none';
+                                document.getElementById('rut').setAttribute('required', 'required');
+                                document.getElementById('rut_extranjero').removeAttribute('required');
+                            }
+                        }
+
+                        window.onload = function() {
+                            toggleRutField();
                         }
                     </script>
                 </div>
             </div>
         </div>
     </div>
-
 </x-app-layout>

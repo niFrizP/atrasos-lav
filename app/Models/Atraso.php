@@ -42,6 +42,12 @@ class Atraso extends Model
         return $this->belongsTo(Curso::class, 'curso_id');
     }
 
+    // Relación: Un atraso pertenece a un grado.
+    public function grado()
+    {
+        return $this->belongsTo(Grado::class, 'grado_id');
+    }
+
     // obtener la url de la evidencia
     public function getEvidenciaUrlAttribute()
     {

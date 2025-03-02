@@ -135,8 +135,10 @@ class AtrasoController extends Controller
      */
     public function show(Atraso $atraso)
     {
+        $atraso->load('estudiante.curso.grado');
         return view('atrasos.show', compact('atraso'));
     }
+
 
     /**
      * Mostrar formulario para editar un atraso.
