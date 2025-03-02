@@ -3,7 +3,7 @@
         <h2 class="font-bold text-2xl text-gray-800 dark:text-gray-200">
             Hola, {{ Auth::user()->nomape }}! 👋
         </h2>
-        <div class="justify-between items-end">
+        <div class="flex justify-center space-x-4">
             @if ($usuario->qr)
                 <div class="QRCard">
                     <img src="data:image/png;base64,{{ base64_encode($usuario->qr) }}" alt="Código QR" width="100"

@@ -152,6 +152,7 @@ class EstudianteController extends Controller
      */
     public function update(Request $request, Estudiante $estudiante)
     {
+        // Validar los datos enviados
         $rules = [
             'nomape'          => 'required|string|max:255',
             'rut'             => 'nullable|string|max:15|unique:estudiantes,rut,' . $estudiante->id,
@@ -164,90 +165,73 @@ class EstudianteController extends Controller
             'fec_naci'        => 'nullable|date',
         ];
 
-        $data = $request->validate($rules);
+        $validated = $request->validate($rules);
+
+        // Capturar el curso anterior antes de actualizar
+        $cursoAnterior = $estudiante->curso_id;
+        $nuevoCurso = $request->curso_id;
 
         DB::beginTransaction();
         try {
-            // Verificar si hay cambio de curso para actualizar el histórico
-            if ($estudiante->curso_id != $request->curso_id) {
+            // Procesar la lógica para "extranjero" (si aplica)
+            $extranjero = $request->input('extranjero') == 1 ? 1 : 0;
+            if ($extranjero) {
+                if ($request->filled('rut_extranjero')) {
+                    $validated['rut_extranjero'] = $request->rut_extranjero;
+                } else {
+                    if (!$estudiante->extranjero || is_null($estudiante->rut_extranjero)) {
+                        $ultimoRutEx = Estudiante::whereNotNull('rut_extranjero')->max('rut_extranjero') ?? 0;
+                        $validated['rut_extranjero'] = $ultimoRutEx + 1;
+                    } else {
+                        $validated['rut_extranjero'] = $estudiante->rut_extranjero;
+                    }
+                }
+                $validated['rut'] = null;
+            } else {
+                $validated['rut_extranjero'] = null;
+            }
+            $validated['extranjero'] = $extranjero;
+
+            // Si hubo cambio de curso, actualizamos el historial
+            if ($cursoAnterior != $nuevoCurso) {
+                // Cerramos el registro histórico anterior (si existe uno abierto)
                 DB::table('his_cursos')
                     ->where('estudiante_id', $estudiante->id)
                     ->whereNull('fecha_fin')
                     ->update(['fecha_fin' => now()]);
 
-                DB::table('his_cursos')->insert([
-                    'estudiante_id' => $estudiante->id,
-                    'curso_id'      => $request->curso_id,
-                    'fecha_inicio'  => now(),
-                    'motivo_cambio' => $request->motivo_cambio,
-                ]);
+                // Preparamos los datos para el nuevo registro histórico
+                $hisData = [
+                    'estudiante_id'   => $estudiante->id,
+                    // Se guarda el curso anterior y el curso nuevo
+                    'curso_id_antes'  => $cursoAnterior,
+                    'curso_id_despues' => $nuevoCurso,
+                    // También se puede utilizar 'curso_id' si esa columna es la principal
+                    'curso_id'        => $nuevoCurso,
+                    'fecha_inicio'    => now(),
+                    'fecha_fin'       => null, // Permanece abierto hasta el siguiente cambio
+                    'motivo_cambio'   => $request->motivo_cambio,
+                ];
+                // Insertamos el registro en la tabla de historial
+                DB::table('his_cursos')->insert($hisData);
             }
 
-            // Determinar el valor de extranjero usando el valor enviado (no solo su existencia)
-            $extranjero = $request->input('extranjero') == 1 ? 1 : 0;
-
-            if ($extranjero) {
-                // Si es extranjero:
-                // 1. Si el usuario envía un valor manual para 'rut_extranjero', se usa ese valor.
-                // 2. De lo contrario, se verifica si ya tenía un rut_extranjero para mantenerlo o se genera uno autoincrementable.
-                if ($request->filled('rut_extranjero')) {
-                    $data['rut_extranjero'] = $request->rut_extranjero;
-                } else {
-                    if (!$estudiante->extranjero || is_null($estudiante->rut_extranjero)) {
-                        $ultimoRutEx = Estudiante::whereNotNull('rut_extranjero')->max('rut_extranjero') ?? 0;
-                        $data['rut_extranjero'] = $ultimoRutEx + 1;
-                    } else {
-                        $data['rut_extranjero'] = $estudiante->rut_extranjero;
-                    }
-                }
-                // Al ser extranjero, se anula el RUT chileno.
-                $data['rut'] = null;
-            } else {
-                // Si no es extranjero, se borra cualquier valor en rut_extranjero.
-                $data['rut_extranjero'] = null;
-            }
-
-            // Se actualiza el valor del campo 'extranjero'
-            $data['extranjero'] = $extranjero;
-
-            // Preparamos los datos del nuevo registro
-            $data = [
-                'estudiante_id' => $estudiante->id,
-                'curso_id' => $request->curso_id,
-                'fecha_inicio' => now(),
-                'motivo_cambio' => $request->motivo_cambio,
-            ];
-
-            // Actualizar el registro y regenerar el QR
-            $estudiante->update($data);
-            $estudiante->generateQR();
-
-            // Verificamos si las columnas curso_id_antes y curso_id_despues existen
-            if (Schema::hasColumn('his_cursos', 'curso_id_antes')) {
-                $data['curso_id_antes'] = $estudiante->curso_id;
-            }
-
-            if (Schema::hasColumn('his_cursos', 'curso_id_despues')) {
-                $data['curso_id_despues'] = $request->curso_id;
-            }
-
-            // Registrar el nuevo curso en `his_cursos`
-            DB::table('his_cursos')->insert($data);
-
-            // Actualizar curso en la tabla `estudiantes`
-            $estudiante->update($request->except(['motivo_cambio']));
+            // Actualizamos el registro del estudiante con los datos validados
+            // Aquí nos aseguramos de actualizar también el curso
+            $estudiante->update($validated);
             $estudiante->generateQR();
 
             DB::commit();
-            return redirect()->route('estudiantes.index')->with('success', 'Estudiante actualizado correctamente.');
+            return redirect()->route('estudiantes.index')
+                ->with('success', 'Estudiante actualizado correctamente.');
         } catch (\Exception $e) {
             DB::rollback();
-            // Loggear el error para revisión
             Log::error('Error al actualizar estudiante: ' . $e->getMessage());
-            // Redirigir con mensaje de error
-            return redirect()->route('estudiantes.index')->with('error', 'Error al actualizar estudiante.');
+            return redirect()->route('estudiantes.index')
+                ->with('error', 'Error al actualizar estudiante.');
         }
     }
+
 
     /**
      * Generar código QR para un estudiante manualmente.

@@ -10,6 +10,9 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <h1 class="text-2xl font-bold mb-4">{{ __('Estudiantes en ') . $curso->codigo }}</h1>
+                    <h1 class="text-2xl font-bold mb-4 flex justify-center">
+                        {{ __('Profesor Jefe: ') . ($curso->profesorJefe ? $curso->profesorJefe->nomape : __('No asignado')) }}
+                    </h1>
 
                     <div class="overflow-x-auto">
                         <table class="w-full border border-gray-300 dark:border-gray-700">
@@ -17,7 +20,8 @@
                                 <tr>
                                     <th class="border border-gray-300 dark:border-gray-600 p-2">{{ __('Nombre') }}</th>
                                     <th class="border border-gray-300 dark:border-gray-600 p-2">{{ __('RUT') }}</th>
-                                    <th class="border border-gray-300 dark:border-gray-600 p-2">{{ __('Acciones') }}</th>
+                                    <th class="border border-gray-300 dark:border-gray-600 p-2">{{ __('Acciones') }}
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>

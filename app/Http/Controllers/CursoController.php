@@ -18,6 +18,7 @@ class CursoController extends Controller
             ->with('cursos') // Cargar la relación de cursos
             ->get();
 
+
         return view('cursos.index', compact('grados'));
     }
 
@@ -34,6 +35,9 @@ class CursoController extends Controller
 
         // Obtener el curso con estudiantes y sus motivos de cambio
         $curso = Curso::with(['estudiantes.motivoCambio'])->findOrFail($id);
+
+        // Cargar el curso con el profesor jefe y estudiantes
+        $curso = Curso::with(['profesorJefe', 'estudiantes'])->findOrFail($id);
 
         // Pasar tanto el grado como el curso a la vista
         return view('cursos.show', compact('grado', 'curso'));

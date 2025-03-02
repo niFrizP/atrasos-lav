@@ -78,7 +78,7 @@
                         <!-- Curso -->
                         <div class="mb-4">
                             <x-input-label for="curso_id" :value="__('Curso')" />
-                            <select name="curso_id" id="curso_id"
+                            <select name="curso_id" id="curso_id" onchange="checkCursoChange()"
                                 class="block mt-1 w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:text-white">
                                 <option value="">{{ __('Selecciona un curso') }}</option>
 
@@ -86,7 +86,10 @@
                                 <optgroup label="Sin Asignar" style="font-weight: bold;">
                                     @foreach ($cursos as $curso)
                                         @if ($curso->grado_id == 5)
-                                            <option value="{{ $curso->id }}">{{ $curso->codigo }}</option>
+                                            <option value="{{ $curso->id }}"
+                                                {{ old('curso_id', $estudiante->curso_id) == $curso->id ? 'selected' : '' }}>
+                                                {{ $curso->codigo }} - {{ $curso->grado->nombre }}
+                                            </option>
                                         @endif
                                     @endforeach
                                 </optgroup>
@@ -95,8 +98,10 @@
                                 <optgroup label="Pre-Básica" style="font-weight: bold;">
                                     @foreach ($cursos as $curso)
                                         @if ($curso->grado_id == 1)
-                                            <option value="{{ $curso->id }}">{{ $curso->codigo }} -
-                                                {{ $curso->grado->nombre }}</option>
+                                            <option value="{{ $curso->id }}"
+                                                {{ old('curso_id', $estudiante->curso_id) == $curso->id ? 'selected' : '' }}>
+                                                {{ $curso->codigo }} - {{ $curso->grado->nombre }}
+                                            </option>
                                         @endif
                                     @endforeach
                                 </optgroup>
@@ -105,8 +110,10 @@
                                 <optgroup label="Básica" style="font-weight: bold;">
                                     @foreach ($cursos as $curso)
                                         @if ($curso->grado_id == 2)
-                                            <option value="{{ $curso->id }}">{{ $curso->codigo }} -
-                                                {{ $curso->grado->nombre }}</option>
+                                            <option value="{{ $curso->id }}"
+                                                {{ old('curso_id', $estudiante->curso_id) == $curso->id ? 'selected' : '' }}>
+                                                {{ $curso->codigo }} - {{ $curso->grado->nombre }}
+                                            </option>
                                         @endif
                                     @endforeach
                                 </optgroup>
@@ -115,8 +122,10 @@
                                 <optgroup label="Media" style="font-weight: bold;">
                                     @foreach ($cursos as $curso)
                                         @if ($curso->grado_id == 3)
-                                            <option value="{{ $curso->id }}">{{ $curso->codigo }} -
-                                                {{ $curso->grado->nombre }}</option>
+                                            <option value="{{ $curso->id }}"
+                                                {{ old('curso_id', $estudiante->curso_id) == $curso->id ? 'selected' : '' }}>
+                                                {{ $curso->codigo }} - {{ $curso->grado->nombre }}
+                                            </option>
                                         @endif
                                     @endforeach
                                 </optgroup>
@@ -125,7 +134,10 @@
                                 <optgroup label="Finalizado" style="font-weight: bold;">
                                     @foreach ($cursos as $curso)
                                         @if ($curso->grado_id == 4)
-                                            <option value="{{ $curso->id }}">{{ $curso->codigo }}</option>
+                                            <option value="{{ $curso->id }}"
+                                                {{ old('curso_id', $estudiante->curso_id) == $curso->id ? 'selected' : '' }}>
+                                                {{ $curso->codigo }} - {{ $curso->grado->nombre }}
+                                            </option>
                                         @endif
                                     @endforeach
                                 </optgroup>

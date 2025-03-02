@@ -40,6 +40,7 @@ class Curso extends Model
     {
         return $this->hasMany(ProfesoresCurso::class, 'curso_id');
     }
+    
 
     public function curso()
     {

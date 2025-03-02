@@ -22,16 +22,24 @@
 
         <div>
             <x-input-label for="update_password_password" :value="__('Nueva Contraseña')" />
-            <x-text-input id="update_password_password" name="password" type="password" class="mt-1 block w-full"
-                autocomplete="new-password" />
+            <x-text-input id="update_password_password" maxlength="12" name="password" type="password"
+                class="mt-1 block w-full" autocomplete="new-password" />
             <x-input-error :messages="$errors->updatePassword->get('password')" class="mt-2" />
+            <div class="text-sm text-gray-500 mt-1">
+                <p>{{ __('La contraseña debe tener al menos 8 y máximo 12 caracteres, además, contener una letra mayúscula, una minúscula y contener un número y símbolo -/;:()&@.?!%*') }}
+                </p>
+            </div>
         </div>
 
         <div>
             <x-input-label for="update_password_password_confirmation" :value="__('Confirmar Contraseña')" />
-            <x-text-input id="update_password_password_confirmation" name="password_confirmation" type="password"
-                class="mt-1 block w-full" autocomplete="new-password" />
+            <x-text-input id="update_password_password_confirmation" maxlength="12" name="password_confirmation"
+                type="password" class="mt-1 block w-full" autocomplete="new-password" />
             <x-input-error :messages="$errors->updatePassword->get('password_confirmation')" class="mt-2" />
+            <div class="text-sm text-gray-500 mt-1">
+                <p>{{ __('Recuerde su contraseña y no compartirla con nadie') }}
+                </p>
+            </div>
         </div>
 
         <div class="flex items-center gap-4">
