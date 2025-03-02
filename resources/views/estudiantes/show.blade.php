@@ -13,29 +13,53 @@
                     <div class="flex justify-between items-start">
                         <!-- Datos del Estudiante -->
                         <div class="w-2/3">
-                            <p><strong>{{ __('Nombre Completo:') }}</strong> {{ $estudiante->nomape }}</p>
+                            <p><strong>{{ __('Nombre Completo:') }}</strong>
+                                <br>
+                                {{ $estudiante->nomape }}
+                            </p>
                             <br>
                             @if ($estudiante->extranjero)
-                                <p><strong>{{ __('RUT Extranjero:') }}</strong> {{ $estudiante->rut_extranjero }}</p>
+                                <p><strong>{{ __('RUT Extranjero:') }}</strong>
+                                    <br>
+                                    {{ $estudiante->rut_extranjero }}
+                                </p>
                             @else
-                                <p><strong>{{ __('RUT:') }}</strong> {{ $estudiante->rut_formatted }}</p>
+                                <p><strong>{{ __('RUT:') }}</strong>
+                                    <br>
+                                    {{ $estudiante->rut_formatted }}
+                                </p>
                             @endif
                             <br>
                             <p><strong>{{ __('Fecha de Nacimiento:') }}</strong>
+                                <br>
                                 {{ $estudiante->fec_naci ?? __('No registrada') }}
                             </p>
                             <br>
                             <p><strong>{{ __('Correo Electrónico:') }}</strong>
-                                {{ $estudiante->correo ?? __('No registrado') }}</p>
+                                <br>
+                                {{ $estudiante->correo ?? __('No registrado') }}
+                            </p>
                             <br>
                             <p><strong>{{ __('Teléfono:') }}</strong>
-                                {{ $estudiante->telefono ?? __('No registrado') }}</p>
+                                <br>
+                                {{ $estudiante->telefono ?? __('No registrado') }}
+                            </p>
                             <br>
                             <p><strong>{{ __('Curso:') }}</strong>
+                                <br>
                                 @if ($estudiante->curso)
                                     {{ $estudiante->curso->codigo }} - {{ $estudiante->curso->grado->nombre }}
                                 @else
                                     {{ __('Sin curso asignado') }}
+                                @endif
+                            </p>
+
+                            <!-- Mostrar motivo de retiro si está retirado -->
+                            <br>
+                            <p><strong>{{ __('Motivo de Retiro:') }}</strong>
+                                <br>
+                                @if (!empty($motivoRetiro))
+                                    {{ $motivoRetiro->motivo_cambio }}
                                 @endif
                             </p>
                         </div>
@@ -43,7 +67,7 @@
 
                     <!-- Sección de QR -->
                     <div class="mt-8">
-                        <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                        <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex justify-center">
                             {{ __('QR del Estudiante') }}
                         </h2>
 

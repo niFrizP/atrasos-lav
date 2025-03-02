@@ -15,7 +15,9 @@
                         @foreach ($grado->cursos as $curso)
                             <a href="{{ route('cursos.curso', $curso->id) }}"
                                 class="p-4 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg block text-center">
-                                {{ $curso->codigo }}
+                                <!-- Mostrar código del curso y el nombre del grado -->
+                                {{ $curso->codigo }} -
+                                {{ $curso->grado->nombre ?? 'Sin grado' }}
                             </a>
                         @endforeach
                     </div>

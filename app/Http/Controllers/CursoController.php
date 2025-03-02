@@ -27,12 +27,18 @@ class CursoController extends Controller
      */
     public function show($id)
     {
+        // Obtener el grado con los cursos que tienen estudiantes
         $grado = Grado::with(['cursos' => function ($query) {
             $query->whereHas('estudiantes'); // Solo los cursos que tienen estudiantes
         }])->findOrFail($id);
 
-        return view('cursos.show', compact('grado'));
+        // Obtener el curso con estudiantes y sus motivos de cambio
+        $curso = Curso::with(['estudiantes.motivoCambio'])->findOrFail($id);
+
+        // Pasar tanto el grado como el curso a la vista
+        return view('cursos.show', compact('grado', 'curso'));
     }
+
 
     /**
      * Muestra los estudiantes de un curso específico.

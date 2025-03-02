@@ -133,7 +133,7 @@
                             <x-input-error :messages="$errors->get('curso_id')" class="mt-2" />
                         </div>
 
-                        <!-- Motivo de cambio (si el curso cambia) -->
+                        <!-- Campo de motivo de cambio, solo aparece si el curso cambia -->
                         <div id="motivo_cambio_container" class="mb-4" style="display: none;">
                             <x-input-label for="motivo_cambio" :value="__('Motivo de cambio')" />
                             <x-text-input id="motivo_cambio" class="block mt-1 w-full" type="text"
@@ -180,9 +180,9 @@
                             }
                         }
 
-                        // Control de curso y motivo de cambio (opcional)
+                        // Mostrar el campo de motivo de cambio si el curso cambia
                         function checkCursoChange() {
-                            const cursoOriginal = "{{ $estudiante->curso_id }}";
+                            const cursoOriginal = "{{ $estudiante->curso ? $estudiante->curso->id : '' }}";
                             const cursoSeleccionado = document.getElementById('curso_id').value;
                             const motivoContainer = document.getElementById('motivo_cambio_container');
 

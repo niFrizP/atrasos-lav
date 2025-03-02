@@ -64,4 +64,10 @@ class Curso extends Model
     {
         return $this->hasManyThrough(Atraso::class, Estudiante::class, 'curso_id', 'estudiante_id');
     }
+
+    // Un curso tiene muchos cambios de curso.
+    public function historial()
+    {
+        return $this->hasMany(HisCurso::class, 'curso_id');
+    }
 }

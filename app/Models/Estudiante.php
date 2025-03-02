@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use App\Models\HisCurso;
 
 class Estudiante extends Model
 {
@@ -71,5 +72,11 @@ class Estudiante extends Model
         $qrCode = QrCode::format('png')->size(200)->generate($data);
         $this->qr = $qrCode; // Guardamos el QR en la BD
         $this->save();
+    }
+
+    public function motivoCambio()
+    {
+        return $this->hasOne(HisCurso::class)
+            ->whereNotNull('motivo_cambio'); // Solo obtener si tiene motivo_cambio
     }
 }

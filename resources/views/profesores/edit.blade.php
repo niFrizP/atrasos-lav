@@ -23,26 +23,36 @@
                             <x-input-error :messages="$errors->get('nomape')" class="mt-2" />
                         </div>
 
-                        <!-- Extranjero -->
-                        <div class="mb-4">
-                            <x-input-label for="extranjero" :value="__('¿Es extranjero?')" />
-                            <input type="checkbox" id="extranjero" name="extranjero"
-                                :checked="old('extranjero', $profesor - > rut_extranjero ? true : false)"
-                                onclick="toggleRutField()" />
-                            <x-input-error :messages="$errors->get('extranjero')" class="mt-2" />
-                        </div>
 
                         <!-- RUT -->
-                        <div class="mb-4">
+                        <!-- Campo RUT (chileno) -->
+                        <div class="mb-4" id="rut_container">
                             <x-input-label for="rut" :value="__('RUT')" />
                             <x-text-input id="rut" class="block mt-1 w-full" type="text" name="rut"
-                                maxlength="12" value="{{ old('rut', $profesor->rut) }}" required
-                                oninput="formatRut(this)"
-                                {{ old('extranjero', $profesor->rut_extranjero) ? 'disabled' : '' }} />
+                                maxlength="12" value="{{ old('rut', $profesor->rut) }}" oninput="formatRut(this)" />
                             <x-input-error :messages="$errors->get('rut')" class="mt-2" />
                         </div>
 
-                        <!-- Correo Electrónico -->
+                        <!-- Campo RUT Extranjero -->
+                        <div class="mb-4" id="rut_extranjero_container">
+                            <x-input-label for="rut_extranjero" :value="__('RUT Extranjero')" />
+                            <x-text-input id="rut_extranjero" class="block mt-1 w-full" type="text"
+                                name="rut_extranjero" maxlength="15"
+                                value="{{ old('rut_extranjero', $profesor->rut_extranjero) }}" />
+                            <x-input-error :messages="$errors->get('rut_extranjero')" class="mt-2" />
+                        </div>
+
+                        <!-- Checkbox Extranjero -->
+                        <div class="mb-4">
+                            <x-input-label for="extranjero" :value="__('¿Es extranjero?')" />
+                            <input type="hidden" name="extranjero" value="0">
+                            <input type="checkbox" id="extranjero" name="extranjero" value="1"
+                                {{ old('extranjero', $profesor->extranjero) == 1 ? 'checked' : '' }}
+                                onclick="toggleRutFields()" />
+                            <x-input-error :messages="$errors->get('extranjero')" class="mt-2" />
+                        </div>
+
+                        <!-- Correo -->
                         <div class="mb-4">
                             <x-input-label for="correo" :value="__('Correo Electrónico')" />
                             <x-text-input id="correo" class="block mt-1 w-full" type="email" name="correo"
@@ -97,13 +107,23 @@
                             input.value = value;
                         }
 
+                        // Mostrar u ocultar los campos según el checkbox en edición
                         function toggleRutField() {
-                            const isChecked = document.getElementById('extranjero').checked;
-                            document.getElementById('rut').disabled = isChecked;
+                            const isExtranjero = document.getElementById('extranjero').checked;
+                            const rutContainer = document.getElementById('rut_container');
+                            const rutExContainer = document.getElementById('rut_extranjero_container');
+
+                            if (isExtranjero) {
+                                rutContainer.style.display = 'none';
+                                rutExContainer.style.display = 'block';
+                            } else {
+                                rutContainer.style.display = 'block';
+                                rutExContainer.style.display = 'none';
+                            }
                         }
-                        // Llamar a la función al cargar la página para que se aplique el estado inicial
+
                         window.onload = function() {
-                            toggleRutField();
+                            toggleRutFields();
                         }
                     </script>
                 </div>

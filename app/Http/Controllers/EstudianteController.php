@@ -39,6 +39,26 @@ class EstudianteController extends Controller
         return view('estudiantes.index', compact('estudiantes'));
     }
 
+    public function buscar(Request $request)
+    {
+        // Obtener el término de búsqueda desde el parámetro 'q' que envía Select2
+        $search = $request->input('q'); // 'q' es el término de búsqueda que envía Select2
+
+        // Realizar la búsqueda en la base de datos
+        $estudiantes = Estudiante::where('nomape', 'like', '%' . $search . '%')
+            ->with('curso.grado') // Cargar las relaciones necesarias
+            ->limit(10) // Limitar el número de resultados para optimizar
+            ->get();
+
+        // Retornar los resultados formateados para Select2
+        return response()->json($estudiantes->map(function ($estudiante) {
+            return [
+                'id' => $estudiante->id,
+                'text' => $estudiante->nomape . ' - ' . $estudiante->curso->codigo . ' (' . $estudiante->curso->grado->nombre . ')'
+            ];
+        }));
+    }
+
     /**
      * Mostrar formulario de creación de estudiante.
      */
@@ -99,16 +119,24 @@ class EstudianteController extends Controller
     }
 
 
-
     /**
      * Mostrar perfil de un estudiante.
      */
     public function show(Estudiante $estudiante)
     {
-        // Cargar relaciones necesarias, por ejemplo: curso y atrasos
-        $estudiante->load('curso', 'atrasos');
-        return view('estudiantes.show', compact('estudiante'));
+        // Cargar relaciones necesarias
+        $estudiante->load('curso', 'atrasos', 'curso.historial');
+
+        // Filtrar el historial para encontrar el registro con curso_id = 82
+        $motivoRetiro = optional($estudiante->curso)->historial
+            ->where('curso_id', 82) // Filtra por curso_id específico
+            ->first();
+
+        // Pasar motivo de retiro a la vista
+        return view('estudiantes.show', compact('estudiante', 'motivoRetiro'));
     }
+
+
 
     /**
      * Mostrar formulario de edición.
@@ -182,15 +210,41 @@ class EstudianteController extends Controller
             // Se actualiza el valor del campo 'extranjero'
             $data['extranjero'] = $extranjero;
 
+            // Preparamos los datos del nuevo registro
+            $data = [
+                'estudiante_id' => $estudiante->id,
+                'curso_id' => $request->curso_id,
+                'fecha_inicio' => now(),
+                'motivo_cambio' => $request->motivo_cambio,
+            ];
+
             // Actualizar el registro y regenerar el QR
             $estudiante->update($data);
+            $estudiante->generateQR();
+
+            // Verificamos si las columnas curso_id_antes y curso_id_despues existen
+            if (Schema::hasColumn('his_cursos', 'curso_id_antes')) {
+                $data['curso_id_antes'] = $estudiante->curso_id;
+            }
+
+            if (Schema::hasColumn('his_cursos', 'curso_id_despues')) {
+                $data['curso_id_despues'] = $request->curso_id;
+            }
+
+            // Registrar el nuevo curso en `his_cursos`
+            DB::table('his_cursos')->insert($data);
+
+            // Actualizar curso en la tabla `estudiantes`
+            $estudiante->update($request->except(['motivo_cambio']));
             $estudiante->generateQR();
 
             DB::commit();
             return redirect()->route('estudiantes.index')->with('success', 'Estudiante actualizado correctamente.');
         } catch (\Exception $e) {
             DB::rollback();
+            // Loggear el error para revisión
             Log::error('Error al actualizar estudiante: ' . $e->getMessage());
+            // Redirigir con mensaje de error
             return redirect()->route('estudiantes.index')->with('error', 'Error al actualizar estudiante.');
         }
     }

@@ -33,6 +33,7 @@ class ProfesorController extends Controller
         return view('profesores.index', compact('profesores'));
     }
 
+
     /**
      * Muestra los cursos donde ha sido profesor jefe.
      */
@@ -91,6 +92,8 @@ class ProfesorController extends Controller
             'telefono' => 'nullable|string|max:9',
             'password' => 'required|string|min:8',
             'curso_id' => 'nullable|exists:cursos,id',
+            'rut' => 'nullable|string|max:15|unique:usuarios,rut',
+            'rut_extranjero' => 'nullable|string|max:15|unique:usuarios,rut_extranjero',
             'extranjero' => 'nullable|boolean',
         ];
 
@@ -103,12 +106,16 @@ class ProfesorController extends Controller
 
         $data = $request->validate($rules);
 
-        // Manejo del campo extranjero y rut_extranjero
-        if ($request->filled('extranjero') && $request->extranjero) {
-            // Si es extranjero, generamos un rut_extranjero
-            $lastRutExtranjero = Usuario::whereNotNull('rut_extranjero')->max('rut_extranjero') ?? 0;
-            $data['rut_extranjero'] = $lastRutExtranjero + 1;
-            $data['rut'] = null;  // Dejar el rut nulo si es extranjero
+        // Determinar el valor del checkbox basado en el valor enviado
+        $extranjero = $request->input('extranjero') == 1 ? 1 : 0;
+
+        if ($extranjero) {
+            $ultimoRutEx = Usuario::whereNotNull('rut_extranjero')->max('rut_extranjero');
+            $rut_extranjero = $ultimoRutEx ? $ultimoRutEx + 1 : 1; // Inicia en 1 si no hay registros
+            $rut = null;
+        } else {
+            $rut = $request->rut;
+            $rut_extranjero = null;
         }
 
         // Cifrar contraseña y asignar rol de profesor
@@ -116,6 +123,7 @@ class ProfesorController extends Controller
         $data['rol_id'] = 4;  // Rol Profesor
         $data['extranjero'] = $data['extranjero'] ?? false;  // Asegurarnos que se almacene un booleano
 
+        // Crear el profesor y asignar curso si corresponde
         DB::transaction(function () use ($data, $request) {
             $profesor = Usuario::create($data);  // Aquí debe almacenar extranjero y rut_extranjero
 
@@ -131,7 +139,10 @@ class ProfesorController extends Controller
                     'activo' => true,
                 ]);
             }
+            // Generar QR
+            $profesor->generateQR();
         });
+
 
         return redirect()->route('profesores.index')
             ->with('success', 'Profesor creado y curso asignado correctamente.');
@@ -159,6 +170,8 @@ class ProfesorController extends Controller
             'correo'   => 'required|email|max:255|unique:usuarios,correo,' . $profesor->id,
             'telefono' => 'nullable|string|max:9',
             'curso_id' => 'nullable|exists:cursos,id',
+            'rut' => 'nullable|string|max:15|unique:usuarios,rut,' . $profesor->id,
+            'rut_extranjero' => 'nullable|string|max:15|unique:usuarios,rut_extranjero,' . $profesor->id,
             'extranjero' => 'nullable|boolean',
         ];
 
@@ -170,13 +183,16 @@ class ProfesorController extends Controller
 
         $data = $request->validate($rules);
 
-        // Manejo del campo extranjero y rut_extranjero
-        if ($request->filled('extranjero') && $request->extranjero) {
-            $lastRutExtranjero = Usuario::whereNotNull('rut_extranjero')->max('rut_extranjero') ?? 0;
-            $data['rut_extranjero'] = $lastRutExtranjero + 1;
-            $data['rut'] = null;
+        // Determinar el valor del checkbox basado en el valor enviado
+        $extranjero = $request->input('extranjero') == 1 ? 1 : 0;
+
+        if ($extranjero) {
+            $ultimoRutEx = Usuario::whereNotNull('rut_extranjero')->max('rut_extranjero');
+            $rut_extranjero = $ultimoRutEx ? $ultimoRutEx + 1 : 1; // Inicia en 1 si no hay registros
+            $rut = null;
         } else {
-            $data['rut_extranjero'] = null;
+            $rut = $request->rut;
+            $rut_extranjero = null;
         }
 
         DB::transaction(function () use ($data, $profesor, $request) {
@@ -198,7 +214,10 @@ class ProfesorController extends Controller
                     'activo'     => true,
                 ]);
             }
+            // Actualizar QR
+            $profesor->generateQR();
         });
+
 
         return redirect()->route('profesores.index')
             ->with('success', 'Profesor actualizado correctamente.');
